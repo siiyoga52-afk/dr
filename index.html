@@ -158,11 +158,16 @@
             display: block;
         }
 
-        .success-page img {
+        .success-page .image-container {
+            margin-bottom: 20px;
+        }
+
+        .success-page .image-container img {
             max-width: 100%;
+            max-height: 300px;
             border-radius: 16px;
-            margin: 20px 0;
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            object-fit: cover;
         }
 
         .success-page .message-text {
@@ -188,6 +193,85 @@
             display: none;
         }
 
+        /* Стили для финального экрана */
+        .final-page {
+            display: none;
+            padding: 20px 0;
+        }
+
+        .final-page.active {
+            display: block;
+            animation: fadeIn 1.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: scale(0.8);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        .final-page h1 {
+            font-size: 36px;
+            color: #2d3436;
+            margin-bottom: 15px;
+        }
+
+        .final-page .big-hearts {
+            font-size: 80px;
+            margin: 20px 0;
+            animation: pulse 1.5s ease-in-out infinite;
+        }
+
+        .final-page .love-text {
+            font-size: 24px;
+            color: #2d3436;
+            line-height: 1.8;
+            margin: 20px 0;
+        }
+
+        .final-page .love-text .highlight {
+            color: #e17055;
+            font-weight: bold;
+        }
+
+        .final-page .love-text .highlight2 {
+            color: #764ba2;
+            font-weight: bold;
+        }
+
+        .final-page .signature {
+            font-size: 18px;
+            color: #636e72;
+            margin-top: 30px;
+            font-style: italic;
+        }
+
+        .final-page .btn-restart {
+            background: linear-gradient(135deg, #fd79a8 0%, #e17055 100%);
+            margin-top: 20px;
+        }
+
+        .final-page .btn-restart:hover {
+            box-shadow: 0 10px 30px rgba(225, 112, 85, 0.3);
+        }
+
+        .confetti {
+            font-size: 50px;
+            display: inline-block;
+            animation: confettiFall 3s ease-in-out infinite;
+        }
+
+        @keyframes confettiFall {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            25% { transform: translateY(-10px) rotate(10deg); }
+            75% { transform: translateY(10px) rotate(-10deg); }
+        }
+
         @media (max-width: 480px) {
             .container {
                 padding: 25px;
@@ -203,6 +287,18 @@
             .btn {
                 padding: 12px 30px;
                 font-size: 16px;
+            }
+            .final-page h1 {
+                font-size: 28px;
+            }
+            .final-page .love-text {
+                font-size: 20px;
+            }
+            .final-page .big-hearts {
+                font-size: 60px;
+            }
+            .success-page .image-container img {
+                max-height: 200px;
             }
         }
     </style>
@@ -226,10 +322,41 @@
         <div class="success-page" id="successPage">
             <div class="question-number" id="successNumber">Вопрос 1 из 8</div>
             <h2 style="color: #00b894; margin-bottom: 10px;">✅ Правильно!</h2>
+            <div class="image-container" id="successImages"></div>
             <div class="message-text" id="successMessage">Твой текст с картинками!</div>
-            <div id="successImages"></div>
             <button class="btn btn-next" id="nextBtn">Дальше ➜</button>
             <div class="hearts">❤️</div>
+        </div>
+
+        <!-- Финальный экран -->
+        <div class="final-page" id="finalPage">
+            <div class="big-hearts">
+                <span class="confetti">🎉</span>
+                <span>❤️</span>
+                <span class="confetti">🎊</span>
+                <span>💕</span>
+                <span class="confetti">✨</span>
+            </div>
+            
+            <h1>ТЫ ПРОШЛА ВСЕ ВОПРОСЫ! 🎉</h1>
+            
+            <div class="love-text">
+                <p>Вика, ты — самое лучшее, что случилось в моей жизни ❤️</p>
+                <p>Спасибо тебе за каждый день, каждую улыбку,</p>
+                <p>за то, что ты есть у меня 💕</p>
+                <br>
+                <p>Ты — моя <span class="highlight">любовь</span>,</p>
+                <p>моя <span class="highlight2">вдохновение</span></p>
+                <p>и мой <span class="highlight">номер 1</span> навсегда! 💖</p>
+                <br>
+                <p style="font-size: 20px;">Я тебя очень сильно люблю! ❤️</p>
+            </div>
+            
+            <div style="font-size: 50px; margin: 20px 0;">😘💕❤️</div>
+            
+            <button class="btn btn-restart" onclick="location.reload()">🔄 Пройти заново</button>
+            
+            <div class="signature">Сделано с любовью ❤️</div>
         </div>
     </div>
 
@@ -237,52 +364,52 @@
         // ===== ТВОИ ДАННЫЕ =====
         const questions = [
             {
-                question: "Какого мозга? Ты здесь реально припарковался. Но где же ты могла сказать эти слова?",
+                question: "«Какого мозга? Ты здесь реально припарковался». Но где же ты могла сказать эти слова?",
                 answer: 1205,
-                successText: "12.05! ❤️\n(здесь будет твой текст с картинками)",
-                images: []
+                successText: "12.05! Именно в этот день я подписал себе приговор терпеть твоё окружение, но зато в замен получил то, о чем я даже и не мечтал❤️. Ужас, сколько же это дней мы провели вместе?",
+                images: ["images/photo1.jpg"]
             },
             {
-                question: "Сколько раз мы были в кино?",
-                answer: 452,
-                successText: "452 раза! Мы обожаем кино! 🎬",
-                images: []
-            },
-            {
-                question: "Сколько раз мы ссорились?",
+                question: "Динозавры, день рождение, Цукер. Что же объединяет все эти слова?",
                 answer: 0,
-                successText: "0 раз! Мы идеальная пара! 💕",
-                images: []
+                successText: "0! Именно столько дней нам понадобилось, чтобы первый раз поебаться💕. Это всё потому что ты нимфоманка ебаная... по крайней мере была",
+                images: ["images/photo2.jpg"]
             },
             {
-                question: "Сколько часов я ждал тебя у подъезда?",
+                question: "Любишь же ты интересоваться чужой жизнью. Не правда ли?",
                 answer: 80,
-                successText: "80 часов! И это того стоило! 😍",
-                images: []
+                successText: "80% совместимости по дате рождения выдал первый же сайт😍. Пиздец... Ну значит судьба",
+                images: ["images/photo3.jpg"]
             },
             {
-                question: "Сколько раз я говорил тебе 'Я люблю тебя'?",
+                question: "Я верю в тебя. Сможешь ли ты ответить на вопрос, не зная его?",
                 answer: 67,
-                successText: "67 раз... но на самом деле намного больше! 💖",
-                images: []
+                successText: "67 67 67",
+                images: ["images/photo4.jpg"]
             },
             {
-                question: "Сколько раз мы ели пиццу вместе?",
+                question: "Жду ответ. Ты же запомнила вопрос после первого ответа?",
+                answer: 452,
+                successText: "452! Именно столько дней мы с тобой вместе❤️. Это столько дней ты уже терпишь мои тупые шутки? Ёбнутая",
+                images: ["images/photo5.jpg"]
+            },
+            {
+                question: "Правила же созданы для того чтобы их нарушать. Верно же?",
                 answer: 0,
-                successText: "0 раз? Надо исправить! 🍕",
-                images: []
+                successText: "0! Именно столько дней мы с тобой прожили вместе без ссор💕. Таким результатом может похвастаться не каждая пара:)",
+                images: ["images/photo6.jpg"]
             },
             {
-                question: "Сколько дней до нашей годовщины? (я изменю это позже)",
+                question: "Ты долго ждала этих слов, а я был глуп. О чём это я?",
                 answer: 933,
-                successText: "933 дня! Но я изменю этот ответ позже 😉",
-                images: []
+                successText: "933! Именно столько раз мы написали друг другу заветные слова: «Я тебя люблю❤️». И на каждое такое сообщение найдётся: «Ты меня не любишь»",
+                images: ["images/photo7.jpg"]
             },
             {
-                question: "Сколько у меня есть ты? (подсказка: ты у меня одна ❤️)",
+                question: "(√2025 - 45)^2026 + 1. Докажешь, что не тупая?",
                 answer: 1,
-                successText: "Правильно! Ты у меня одна и единственная! 💕",
-                images: []
+                successText: "Ты у меня умница и ты мой номер 1 💕!",
+                images: ["images/photo8.jpg"]
             }
         ];
         // ===== КОНЕЦ ТВОИХ ДАННЫХ =====
@@ -292,6 +419,7 @@
 
         const questionPage = document.getElementById('questionPage');
         const successPage = document.getElementById('successPage');
+        const finalPage = document.getElementById('finalPage');
         const questionNumber = document.getElementById('questionNumber');
         const questionText = document.getElementById('questionText');
         const answerInput = document.getElementById('answerInput');
@@ -317,6 +445,7 @@
             
             questionPage.classList.remove('hidden');
             successPage.classList.remove('active');
+            finalPage.classList.remove('active');
         }
 
         function updateProgress() {
@@ -329,27 +458,34 @@
             successNumber.textContent = `Вопрос ${index + 1} из ${totalQuestions}`;
             successMessage.textContent = q.successText;
             
+            // Показываем картинки сверху
             successImages.innerHTML = '';
             if (q.images && q.images.length > 0) {
                 q.images.forEach(src => {
                     const img = document.createElement('img');
                     img.src = src;
                     img.alt = 'Наше фото';
-                    img.style.maxWidth = '100%';
-                    img.style.borderRadius = '12px';
-                    img.style.margin = '10px 0';
+                    img.onerror = function() {
+                        this.style.display = 'none';
+                        const fallback = document.createElement('p');
+                        fallback.textContent = '📸 Фото не загрузилось :(';
+                        fallback.style.color = '#636e72';
+                        fallback.style.fontSize = '16px';
+                        this.parentNode.appendChild(fallback);
+                    };
                     successImages.appendChild(img);
                 });
             }
 
             if (index === totalQuestions - 1) {
-                nextBtn.textContent = '🎉 Финал!';
+                nextBtn.textContent = '🎉 Смотреть финал!';
             } else {
                 nextBtn.textContent = 'Дальше ➜';
             }
 
             questionPage.classList.add('hidden');
             successPage.classList.add('active');
+            finalPage.classList.remove('active');
         }
 
         submitBtn.addEventListener('click', function() {
@@ -390,17 +526,10 @@
             if (currentQuestion < totalQuestions) {
                 loadQuestion(currentQuestion);
             } else {
+                // Показываем финал
                 questionPage.classList.add('hidden');
                 successPage.classList.remove('active');
-                document.querySelector('.container').innerHTML = `
-                    <div style="padding: 40px 20px;">
-                        <h1 style="color: #2d3436; font-size: 32px;">🎉 Поздравляю!</h1>
-                        <p style="font-size: 20px; color: #636e72; margin: 20px 0;">Ты прошла все вопросы!</p>
-                        <div style="font-size: 60px; margin: 30px 0;">❤️💕❤️</div>
-                        <p style="font-size: 18px; color: #2d3436;">Ты лучшая девушка на свете!</p>
-                        <p style="font-size: 16px; color: #636e72; margin-top: 20px;">Сделано с любовью ❤️</p>
-                    </div>
-                `;
+                finalPage.classList.add('active');
             }
         });
 
