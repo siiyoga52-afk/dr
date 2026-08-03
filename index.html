@@ -304,10 +304,12 @@
 
         .success-page .image-container {
             margin-bottom: 20px;
-            position: relative;
             border-radius: 16px;
             overflow: hidden;
             box-shadow: 0 8px 30px rgba(139, 69, 19, 0.15);
+            display: flex;
+            justify-content: center;
+            align-items: center;
         }
 
         .success-page .image-container img {
@@ -321,16 +323,6 @@
 
         .success-page .image-container:hover img {
             transform: scale(1.03);
-        }
-
-        .success-page .image-container::after {
-            content: '❤️';
-            position: absolute;
-            bottom: 12px;
-            right: 12px;
-            font-size: 24px;
-            opacity: 0.8;
-            animation: pulseHearts 2s ease-in-out infinite;
         }
 
         .success-page .message-text {
@@ -401,6 +393,9 @@
             overflow: hidden;
             box-shadow: 0 8px 30px rgba(139, 69, 19, 0.15);
             transition: transform 0.6s ease;
+            display: flex;
+            justify-content: center;
+            align-items: center;
         }
 
         .final-page .final-image:hover {
@@ -576,7 +571,7 @@
                 <p>за то, что ты есть у меня 💕</p>
                 <br>
                 <p>Ты — моя <span class="highlight">любовь</span>,</p>
-                <p>моя <span class="highlight2">вдохновение</span></p>
+                <p>моё <span class="highlight2">вдохновение</span></p>
                 <p>и мой <span class="highlight">номер 1</span> навсегда! 💖</p>
                 <br>
                 <p style="font-size: 20px;">Я тебя очень сильно люблю! ❤️</p>
@@ -608,7 +603,7 @@
             {
                 question: "Любишь же ты интересоваться чужой жизнью. Не правда ли?",
                 answer: 80,
-                successText: "80% совместимости по дате рождения выдал первый же сайт😍. Пиздец... Ну значит судьба",
+                successText: "80% совместимости по дате рождения выдал первый же сайт😍. Пиздец... Ну значит судьба. И кстати мы оба петухи",
                 images: ["images/photo3.jpg"]
             },
             {
