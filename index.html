@@ -13,43 +13,115 @@
 
         body {
             font-family: 'Arial', sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
             display: flex;
             justify-content: center;
             align-items: center;
             padding: 20px;
+            background-image: url('background.jpg');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            position: relative;
+        }
+
+        /* Полупрозрачный оверлей для читаемости */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(241, 220, 211, 0.3);
+            z-index: 0;
         }
 
         .container {
-            background: rgba(255, 255, 255, 0.95);
-            border-radius: 20px;
+            position: relative;
+            z-index: 1;
+            background: rgba(255, 248, 245, 0.92);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-radius: 24px;
             padding: 40px;
             max-width: 600px;
             width: 100%;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            box-shadow: 
+                0 20px 60px rgba(139, 69, 19, 0.15),
+                0 0 0 1px rgba(255, 255, 255, 0.5) inset;
             text-align: center;
-            transition: all 0.3s ease;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            animation: slideUp 0.6s ease-out;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px) scale(0.95);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        .container:hover {
+            transform: translateY(-5px);
+            box-shadow: 
+                0 30px 80px rgba(139, 69, 19, 0.2),
+                0 0 0 1px rgba(255, 255, 255, 0.5) inset;
         }
 
         .question-number {
-            color: #764ba2;
-            font-size: 14px;
-            font-weight: bold;
+            color: #b8957a;
+            font-size: 13px;
+            font-weight: 700;
             text-transform: uppercase;
-            letter-spacing: 2px;
+            letter-spacing: 3px;
             margin-bottom: 10px;
+            position: relative;
+            display: inline-block;
+        }
+
+        .question-number::after {
+            content: '';
+            position: absolute;
+            bottom: -4px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 30px;
+            height: 2px;
+            background: linear-gradient(90deg, #d4a88a, #b8957a);
+            border-radius: 2px;
         }
 
         .question-text {
             font-size: 24px;
-            color: #2d3436;
-            margin-bottom: 30px;
-            line-height: 1.5;
+            color: #4a3729;
+            margin: 25px 0 30px;
+            line-height: 1.6;
             min-height: 80px;
             display: flex;
             align-items: center;
             justify-content: center;
+            font-weight: 600;
+            position: relative;
+        }
+
+        .question-text::before {
+            content: '💭';
+            position: absolute;
+            top: -20px;
+            left: -10px;
+            font-size: 20px;
+            opacity: 0.3;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(-8px) rotate(5deg); }
         }
 
         .input-group {
@@ -58,38 +130,74 @@
 
         input[type="number"] {
             width: 100%;
-            padding: 15px 20px;
+            padding: 16px 20px;
             font-size: 20px;
-            border: 3px solid #dfe6e9;
-            border-radius: 12px;
+            border: 2px solid #e8d5c8;
+            border-radius: 14px;
             outline: none;
-            transition: all 0.3s ease;
-            background: white;
+            transition: all 0.4s ease;
+            background: rgba(255, 248, 245, 0.8);
             text-align: center;
+            color: #4a3729;
+            font-weight: 500;
         }
 
         input[type="number"]:focus {
-            border-color: #764ba2;
-            box-shadow: 0 0 0 5px rgba(118, 75, 162, 0.1);
+            border-color: #d4a88a;
+            box-shadow: 0 0 0 4px rgba(212, 168, 138, 0.2);
+            background: rgba(255, 248, 245, 0.95);
+            transform: scale(1.01);
+        }
+
+        input[type="number"]::placeholder {
+            color: #c4b0a0;
+            font-weight: 400;
+        }
+
+        /* Убираем стрелки у input */
+        input[type="number"]::-webkit-inner-spin-button,
+        input[type="number"]::-webkit-outer-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+        input[type="number"] {
+            -moz-appearance: textfield;
         }
 
         .btn {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #d4a88a 0%, #b8957a 100%);
             color: white;
             border: none;
-            padding: 15px 40px;
+            padding: 16px 40px;
             font-size: 18px;
-            border-radius: 12px;
+            border-radius: 14px;
             cursor: pointer;
-            transition: all 0.3s ease;
-            font-weight: bold;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            font-weight: 700;
             letter-spacing: 1px;
             width: 100%;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.6s;
+        }
+
+        .btn:hover::before {
+            left: 100%;
         }
 
         .btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 30px rgba(118, 75, 162, 0.3);
+            transform: translateY(-3px);
+            box-shadow: 0 12px 30px rgba(184, 149, 122, 0.4);
         }
 
         .btn:active {
@@ -100,89 +208,145 @@
             opacity: 0.5;
             cursor: not-allowed;
             transform: none;
+            box-shadow: none;
         }
 
         .message {
             margin-top: 20px;
-            padding: 15px;
+            padding: 14px 20px;
             border-radius: 12px;
-            font-weight: bold;
+            font-weight: 600;
             display: none;
+            animation: fadeInMessage 0.4s ease;
+        }
+
+        @keyframes fadeInMessage {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         .message.error {
             display: block;
-            background: #ffeaa7;
-            color: #d63031;
+            background: rgba(255, 205, 185, 0.6);
+            color: #b85a4a;
+            border: 1px solid rgba(184, 90, 74, 0.2);
         }
 
         .message.success {
             display: block;
-            background: #55efc4;
-            color: #00b894;
+            background: rgba(200, 230, 210, 0.6);
+            color: #4a8a6a;
+            border: 1px solid rgba(74, 138, 106, 0.2);
         }
 
         .progress-bar {
             width: 100%;
             height: 6px;
-            background: #dfe6e9;
-            border-radius: 3px;
-            margin-top: 30px;
+            background: rgba(232, 213, 200, 0.5);
+            border-radius: 4px;
+            margin-top: 25px;
             overflow: hidden;
+            position: relative;
         }
 
         .progress-fill {
             height: 100%;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            border-radius: 3px;
-            transition: width 0.5s ease;
+            background: linear-gradient(90deg, #d4a88a, #b8957a);
+            border-radius: 4px;
+            transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1);
             width: 0%;
+            position: relative;
+        }
+
+        .progress-fill::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            animation: shimmer 2s infinite;
+        }
+
+        @keyframes shimmer {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
         }
 
         .hearts {
-            font-size: 30px;
-            margin-top: 20px;
-            animation: pulse 1.5s ease-in-out infinite;
+            font-size: 28px;
+            margin-top: 18px;
+            opacity: 0.6;
+            animation: pulseHearts 2s ease-in-out infinite;
         }
 
-        @keyframes pulse {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.1); }
+        @keyframes pulseHearts {
+            0%, 100% { transform: scale(1); opacity: 0.6; }
+            50% { transform: scale(1.1); opacity: 1; }
         }
 
+        /* Страница успеха */
         .success-page {
             display: none;
         }
 
         .success-page.active {
             display: block;
+            animation: fadeInMessage 0.6s ease;
         }
 
         .success-page .image-container {
             margin-bottom: 20px;
+            position: relative;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 8px 30px rgba(139, 69, 19, 0.15);
         }
 
         .success-page .image-container img {
             max-width: 100%;
             max-height: 300px;
             border-radius: 16px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
             object-fit: cover;
+            transition: transform 0.6s ease;
+            display: block;
+        }
+
+        .success-page .image-container:hover img {
+            transform: scale(1.03);
+        }
+
+        .success-page .image-container::after {
+            content: '❤️';
+            position: absolute;
+            bottom: 12px;
+            right: 12px;
+            font-size: 24px;
+            opacity: 0.8;
+            animation: pulseHearts 2s ease-in-out infinite;
         }
 
         .success-page .message-text {
             font-size: 22px;
-            color: #2d3436;
+            color: #4a3729;
             margin: 20px 0;
-            line-height: 1.6;
+            line-height: 1.7;
+            font-weight: 500;
         }
 
         .success-page .btn-next {
-            background: linear-gradient(135deg, #00b894 0%, #00a86b 100%);
+            background: linear-gradient(135deg, #b8c4a8 0%, #8a9a7a 100%);
         }
 
         .success-page .btn-next:hover {
-            box-shadow: 0 10px 30px rgba(0, 184, 148, 0.3);
+            box-shadow: 0 12px 30px rgba(138, 154, 122, 0.4);
         }
 
         .question-page {
@@ -193,7 +357,7 @@
             display: none;
         }
 
-        /* Стили для финального экрана */
+        /* Финальный экран */
         .final-page {
             display: none;
             padding: 20px 0;
@@ -201,104 +365,166 @@
 
         .final-page.active {
             display: block;
-            animation: fadeIn 1.5s ease;
+            animation: fadeInFinal 1.2s ease;
         }
 
-        @keyframes fadeIn {
-            from {
+        @keyframes fadeInFinal {
+            0% {
                 opacity: 0;
-                transform: scale(0.8);
+                transform: scale(0.9) rotate(-2deg);
             }
-            to {
+            50% {
+                transform: scale(1.02) rotate(0.5deg);
+            }
+            100% {
                 opacity: 1;
-                transform: scale(1);
+                transform: scale(1) rotate(0deg);
             }
         }
 
         .final-page h1 {
-            font-size: 36px;
-            color: #2d3436;
+            font-size: 34px;
+            color: #4a3729;
             margin-bottom: 15px;
+            font-weight: 800;
         }
 
         .final-page .big-hearts {
-            font-size: 80px;
+            font-size: 70px;
+            margin: 15px 0;
+            animation: pulseHearts 1.5s ease-in-out infinite;
+        }
+
+        .final-page .final-image {
             margin: 20px 0;
-            animation: pulse 1.5s ease-in-out infinite;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 8px 30px rgba(139, 69, 19, 0.15);
+            transition: transform 0.6s ease;
+        }
+
+        .final-page .final-image:hover {
+            transform: scale(1.02);
+        }
+
+        .final-page .final-image img {
+            max-width: 100%;
+            max-height: 350px;
+            border-radius: 16px;
+            object-fit: cover;
+            display: block;
         }
 
         .final-page .love-text {
-            font-size: 24px;
-            color: #2d3436;
-            line-height: 1.8;
+            font-size: 22px;
+            color: #4a3729;
+            line-height: 1.9;
             margin: 20px 0;
         }
 
         .final-page .love-text .highlight {
-            color: #e17055;
-            font-weight: bold;
+            color: #c97a5a;
+            font-weight: 700;
+            position: relative;
+        }
+
+        .final-page .love-text .highlight::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: linear-gradient(90deg, #c97a5a, transparent);
+            border-radius: 2px;
         }
 
         .final-page .love-text .highlight2 {
-            color: #764ba2;
-            font-weight: bold;
+            color: #b8957a;
+            font-weight: 700;
         }
 
         .final-page .signature {
-            font-size: 18px;
-            color: #636e72;
-            margin-top: 30px;
+            font-size: 16px;
+            color: #b8a090;
+            margin-top: 25px;
             font-style: italic;
+            letter-spacing: 1px;
         }
 
         .final-page .btn-restart {
-            background: linear-gradient(135deg, #fd79a8 0%, #e17055 100%);
+            background: linear-gradient(135deg, #e8b4a8 0%, #c97a5a 100%);
             margin-top: 20px;
         }
 
         .final-page .btn-restart:hover {
-            box-shadow: 0 10px 30px rgba(225, 112, 85, 0.3);
+            box-shadow: 0 12px 30px rgba(201, 122, 90, 0.4);
         }
 
         .confetti {
-            font-size: 50px;
+            font-size: 45px;
             display: inline-block;
-            animation: confettiFall 3s ease-in-out infinite;
+            animation: confettiFall 2.5s ease-in-out infinite;
         }
 
         @keyframes confettiFall {
-            0%, 100% { transform: translateY(0) rotate(0deg); }
-            25% { transform: translateY(-10px) rotate(10deg); }
-            75% { transform: translateY(10px) rotate(-10deg); }
+            0%, 100% { transform: translateY(0) rotate(0deg) scale(1); }
+            25% { transform: translateY(-12px) rotate(15deg) scale(1.1); }
+            75% { transform: translateY(12px) rotate(-10deg) scale(0.9); }
         }
 
+        /* Адаптивность */
         @media (max-width: 480px) {
             .container {
-                padding: 25px;
+                padding: 25px 20px;
+                border-radius: 18px;
             }
             .question-text {
                 font-size: 20px;
                 min-height: 60px;
             }
+            .question-text::before {
+                display: none;
+            }
             input[type="number"] {
                 font-size: 18px;
-                padding: 12px 15px;
+                padding: 14px 15px;
             }
             .btn {
-                padding: 12px 30px;
+                padding: 14px 30px;
                 font-size: 16px;
             }
             .final-page h1 {
-                font-size: 28px;
+                font-size: 26px;
             }
             .final-page .love-text {
-                font-size: 20px;
+                font-size: 19px;
             }
             .final-page .big-hearts {
-                font-size: 60px;
+                font-size: 50px;
             }
             .success-page .image-container img {
                 max-height: 200px;
+            }
+            .final-page .final-image img {
+                max-height: 220px;
+            }
+            .confetti {
+                font-size: 35px;
+            }
+        }
+
+        @media (max-width: 380px) {
+            .container {
+                padding: 18px 14px;
+            }
+            .question-text {
+                font-size: 17px;
+                min-height: 50px;
+            }
+            .btn {
+                font-size: 14px;
+                padding: 12px 20px;
             }
         }
     </style>
@@ -321,7 +547,7 @@
 
         <div class="success-page" id="successPage">
             <div class="question-number" id="successNumber">Вопрос 1 из 8</div>
-            <h2 style="color: #00b894; margin-bottom: 10px;">✅ Правильно!</h2>
+            <h2 style="color: #4a8a6a; margin-bottom: 10px; font-weight: 700;">✅ Правильно!</h2>
             <div class="image-container" id="successImages"></div>
             <div class="message-text" id="successMessage">Твой текст с картинками!</div>
             <button class="btn btn-next" id="nextBtn">Дальше ➜</button>
@@ -339,6 +565,10 @@
             </div>
             
             <h1>ТЫ ПРОШЛА ВСЕ ВОПРОСЫ! 🎉</h1>
+
+            <div class="final-image">
+                <img src="images/photo9.jpg" alt="Наше фото" onerror="this.style.display='none'; this.parentNode.innerHTML='<p style=\'color:#b8a090;font-size:16px;\'>📸 Фото не загрузилось :(</p>'">
+            </div>
             
             <div class="love-text">
                 <p>Вика, ты — самое лучшее, что случилось в моей жизни ❤️</p>
@@ -352,7 +582,7 @@
                 <p style="font-size: 20px;">Я тебя очень сильно люблю! ❤️</p>
             </div>
             
-            <div style="font-size: 50px; margin: 20px 0;">😘💕❤️</div>
+            <div style="font-size: 50px; margin: 15px 0; animation: pulseHearts 2s ease-in-out infinite;">😘💕❤️</div>
             
             <button class="btn btn-restart" onclick="location.reload()">🔄 Пройти заново</button>
             
@@ -458,7 +688,6 @@
             successNumber.textContent = `Вопрос ${index + 1} из ${totalQuestions}`;
             successMessage.textContent = q.successText;
             
-            // Показываем картинки сверху
             successImages.innerHTML = '';
             if (q.images && q.images.length > 0) {
                 q.images.forEach(src => {
@@ -469,7 +698,7 @@
                         this.style.display = 'none';
                         const fallback = document.createElement('p');
                         fallback.textContent = '📸 Фото не загрузилось :(';
-                        fallback.style.color = '#636e72';
+                        fallback.style.color = '#b8a090';
                         fallback.style.fontSize = '16px';
                         this.parentNode.appendChild(fallback);
                     };
@@ -526,7 +755,6 @@
             if (currentQuestion < totalQuestions) {
                 loadQuestion(currentQuestion);
             } else {
-                // Показываем финал
                 questionPage.classList.add('hidden');
                 successPage.classList.remove('active');
                 finalPage.classList.add('active');
