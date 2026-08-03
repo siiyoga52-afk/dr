@@ -84,28 +84,15 @@
         .intro-page h1 {
             font-size: 36px;
             color: #4a3729;
-            margin-bottom: 10px;
+            margin-bottom: 20px;
             font-weight: 800;
         }
 
-        .intro-page .subtitle {
-            font-size: 18px;
-            color: #b8957a;
-            margin-bottom: 20px;
-            font-weight: 600;
-            letter-spacing: 2px;
-        }
-
         .intro-page .intro-text {
-            font-size: 20px;
+            font-size: 22px;
             color: #4a3729;
             line-height: 1.8;
             margin: 20px 0 30px;
-        }
-
-        .intro-page .intro-text .highlight {
-            color: #c97a5a;
-            font-weight: 700;
         }
 
         .intro-page .btn-start {
@@ -142,12 +129,6 @@
         .intro-page .btn-start:hover {
             transform: translateY(-3px);
             box-shadow: 0 12px 30px rgba(184, 149, 122, 0.4);
-        }
-
-        .intro-page .big-hearts {
-            font-size: 60px;
-            margin: 15px 0;
-            animation: pulseHearts 1.5s ease-in-out infinite;
         }
 
         .question-number {
@@ -466,7 +447,6 @@
             color: #c97a5a;
             font-weight: 700;
             margin: 10px 0;
-            animation: pulseHearts 1.5s ease-in-out infinite;
         }
 
         .final-page .big-hearts {
@@ -544,6 +524,11 @@
             box-shadow: 0 12px 30px rgba(201, 122, 90, 0.4);
         }
 
+        .final-page .bottom-emojis {
+            font-size: 50px;
+            margin: 15px 0;
+        }
+
         .confetti {
             font-size: 45px;
             display: inline-block;
@@ -566,7 +551,7 @@
                 font-size: 28px;
             }
             .intro-page .intro-text {
-                font-size: 17px;
+                font-size: 18px;
             }
             .intro-page .btn-start {
                 font-size: 18px;
@@ -608,6 +593,9 @@
             .confetti {
                 font-size: 35px;
             }
+            .final-page .bottom-emojis {
+                font-size: 40px;
+            }
         }
 
         @media (max-width: 380px) {
@@ -629,19 +617,11 @@
     <div class="container" id="app">
         <!-- Вступление -->
         <div class="intro-page" id="introPage">
-            <div class="big-hearts">
-                <span>❤️</span>
-                <span>💕</span>
-                <span>❤️</span>
-            </div>
             <h1>Привет, Вика! 👋</h1>
-            <div class="subtitle">❤️ Тест про наши отношения ❤️</div>
             <div class="intro-text">
-                Я подготовил для тебя <span class="highlight">8 вопросов</span> о нас.<br>
-                Ответь на все правильно — и тебя ждёт <span class="highlight">сюрприз</span>! 🎁<br><br>
-                <span style="font-size: 16px; color: #b8a090;">Готова проверить, насколько хорошо ты меня знаешь? 😉</span>
+                Я подготовил для тебя сюрприз.
             </div>
-            <button class="btn-start" id="startBtn">Начать тест ❤️</button>
+            <button class="btn-start" id="startBtn">Начать ❤️</button>
             <div class="hearts" style="margin-top: 20px;">❤️</div>
         </div>
 
@@ -705,7 +685,7 @@
                 </p>
             </div>
             
-            <div style="font-size: 50px; margin: 15px 0; animation: pulseHearts 2s ease-in-out infinite;">🎁🎈🎂😘💕❤️</div>
+            <div class="bottom-emojis">🎁🎈🎂😘💕❤️</div>
             
             <button class="btn btn-restart" onclick="location.reload()">🔄 Пройти заново</button>
             
