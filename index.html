@@ -25,7 +25,6 @@
             position: relative;
         }
 
-        /* Полупрозрачный оверлей для читаемости */
         body::before {
             content: '';
             position: fixed;
@@ -71,6 +70,84 @@
             box-shadow: 
                 0 30px 80px rgba(139, 69, 19, 0.2),
                 0 0 0 1px rgba(255, 255, 255, 0.5) inset;
+        }
+
+        /* Вступление */
+        .intro-page {
+            display: block;
+        }
+
+        .intro-page.hidden {
+            display: none;
+        }
+
+        .intro-page h1 {
+            font-size: 36px;
+            color: #4a3729;
+            margin-bottom: 10px;
+            font-weight: 800;
+        }
+
+        .intro-page .subtitle {
+            font-size: 18px;
+            color: #b8957a;
+            margin-bottom: 20px;
+            font-weight: 600;
+            letter-spacing: 2px;
+        }
+
+        .intro-page .intro-text {
+            font-size: 20px;
+            color: #4a3729;
+            line-height: 1.8;
+            margin: 20px 0 30px;
+        }
+
+        .intro-page .intro-text .highlight {
+            color: #c97a5a;
+            font-weight: 700;
+        }
+
+        .intro-page .btn-start {
+            background: linear-gradient(135deg, #d4a88a 0%, #b8957a 100%);
+            color: white;
+            border: none;
+            padding: 18px 50px;
+            font-size: 22px;
+            border-radius: 14px;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            font-weight: 700;
+            letter-spacing: 1px;
+            width: 100%;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .intro-page .btn-start::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.6s;
+        }
+
+        .intro-page .btn-start:hover::before {
+            left: 100%;
+        }
+
+        .intro-page .btn-start:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 30px rgba(184, 149, 122, 0.4);
+        }
+
+        .intro-page .big-hearts {
+            font-size: 60px;
+            margin: 15px 0;
+            animation: pulseHearts 1.5s ease-in-out infinite;
         }
 
         .question-number {
@@ -154,7 +231,6 @@
             font-weight: 400;
         }
 
-        /* Убираем стрелки у input */
         input[type="number"]::-webkit-inner-spin-button,
         input[type="number"]::-webkit-outer-spin-button {
             -webkit-appearance: none;
@@ -342,6 +418,10 @@
         }
 
         .question-page {
+            display: none;
+        }
+
+        .question-page.active {
             display: block;
         }
 
@@ -377,8 +457,16 @@
         .final-page h1 {
             font-size: 34px;
             color: #4a3729;
-            margin-bottom: 15px;
+            margin-bottom: 10px;
             font-weight: 800;
+        }
+
+        .final-page .birthday-title {
+            font-size: 28px;
+            color: #c97a5a;
+            font-weight: 700;
+            margin: 10px 0;
+            animation: pulseHearts 1.5s ease-in-out infinite;
         }
 
         .final-page .big-hearts {
@@ -474,6 +562,16 @@
                 padding: 25px 20px;
                 border-radius: 18px;
             }
+            .intro-page h1 {
+                font-size: 28px;
+            }
+            .intro-page .intro-text {
+                font-size: 17px;
+            }
+            .intro-page .btn-start {
+                font-size: 18px;
+                padding: 16px 30px;
+            }
             .question-text {
                 font-size: 20px;
                 min-height: 60px;
@@ -491,6 +589,9 @@
             }
             .final-page h1 {
                 font-size: 26px;
+            }
+            .final-page .birthday-title {
+                font-size: 22px;
             }
             .final-page .love-text {
                 font-size: 19px;
@@ -526,6 +627,25 @@
 </head>
 <body>
     <div class="container" id="app">
+        <!-- Вступление -->
+        <div class="intro-page" id="introPage">
+            <div class="big-hearts">
+                <span>❤️</span>
+                <span>💕</span>
+                <span>❤️</span>
+            </div>
+            <h1>Привет, Вика! 👋</h1>
+            <div class="subtitle">❤️ Тест про наши отношения ❤️</div>
+            <div class="intro-text">
+                Я подготовил для тебя <span class="highlight">8 вопросов</span> о нас.<br>
+                Ответь на все правильно — и тебя ждёт <span class="highlight">сюрприз</span>! 🎁<br><br>
+                <span style="font-size: 16px; color: #b8a090;">Готова проверить, насколько хорошо ты меня знаешь? 😉</span>
+            </div>
+            <button class="btn-start" id="startBtn">Начать тест ❤️</button>
+            <div class="hearts" style="margin-top: 20px;">❤️</div>
+        </div>
+
+        <!-- Страница с вопросом -->
         <div class="question-page" id="questionPage">
             <div class="question-number" id="questionNumber">Вопрос 1 из 8</div>
             <div class="question-text" id="questionText">Загрузка вопроса...</div>
@@ -540,6 +660,7 @@
             <div class="hearts">❤️</div>
         </div>
 
+        <!-- Страница успеха -->
         <div class="success-page" id="successPage">
             <div class="question-number" id="successNumber">Вопрос 1 из 8</div>
             <h2 style="color: #4a8a6a; margin-bottom: 10px; font-weight: 700;">✅ Правильно!</h2>
@@ -560,6 +681,7 @@
             </div>
             
             <h1>ТЫ ПРОШЛА ВСЕ ВОПРОСЫ! 🎉</h1>
+            <div class="birthday-title">🎂 С ДНЁМ РОЖДЕНИЯ, ВИКА! 🎂</div>
 
             <div class="final-image">
                 <img src="images/photo9.jpg" alt="Наше фото" onerror="this.style.display='none'; this.parentNode.innerHTML='<p style=\'color:#b8a090;font-size:16px;\'>📸 Фото не загрузилось :(</p>'">
@@ -575,9 +697,15 @@
                 <p>и мой <span class="highlight">номер 1</span> навсегда! 💖</p>
                 <br>
                 <p style="font-size: 20px;">Я тебя очень сильно люблю! ❤️</p>
+                <br>
+                <p style="font-size: 18px; color: #c97a5a; font-weight: 600;">
+                    🥳 С днём рождения, моя родная!<br>
+                    Желаю тебе счастья, здоровья и чтобы<br>
+                    каждый день был таким же прекрасным, как ты! 💕
+                </p>
             </div>
             
-            <div style="font-size: 50px; margin: 15px 0; animation: pulseHearts 2s ease-in-out infinite;">😘💕❤️</div>
+            <div style="font-size: 50px; margin: 15px 0; animation: pulseHearts 2s ease-in-out infinite;">🎁🎈🎂😘💕❤️</div>
             
             <button class="btn btn-restart" onclick="location.reload()">🔄 Пройти заново</button>
             
@@ -642,9 +770,11 @@
         let currentQuestion = 0;
         const totalQuestions = questions.length;
 
+        const introPage = document.getElementById('introPage');
         const questionPage = document.getElementById('questionPage');
         const successPage = document.getElementById('successPage');
         const finalPage = document.getElementById('finalPage');
+        const startBtn = document.getElementById('startBtn');
         const questionNumber = document.getElementById('questionNumber');
         const questionText = document.getElementById('questionText');
         const answerInput = document.getElementById('answerInput');
@@ -668,6 +798,7 @@
             answerInput.disabled = false;
             updateProgress();
             
+            questionPage.classList.add('active');
             questionPage.classList.remove('hidden');
             successPage.classList.remove('active');
             finalPage.classList.remove('active');
@@ -707,10 +838,19 @@
                 nextBtn.textContent = 'Дальше ➜';
             }
 
+            questionPage.classList.remove('active');
             questionPage.classList.add('hidden');
             successPage.classList.add('active');
             finalPage.classList.remove('active');
         }
+
+        // Кнопка "Начать"
+        startBtn.addEventListener('click', function() {
+            introPage.classList.add('hidden');
+            questionPage.classList.add('active');
+            questionPage.classList.remove('hidden');
+            loadQuestion(0);
+        });
 
         submitBtn.addEventListener('click', function() {
             const q = questions[currentQuestion];
@@ -750,13 +890,12 @@
             if (currentQuestion < totalQuestions) {
                 loadQuestion(currentQuestion);
             } else {
+                questionPage.classList.remove('active');
                 questionPage.classList.add('hidden');
                 successPage.classList.remove('active');
                 finalPage.classList.add('active');
             }
         });
-
-        loadQuestion(0);
     </script>
 </body>
 </html>
