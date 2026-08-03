@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Наши отношения ❤️</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 40px;
+            max-width: 600px;
+            width: 100%;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .question-number {
+            color: #764ba2;
+            font-size: 14px;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 10px;
+        }
+
+        .question-text {
+            font-size: 24px;
+            color: #2d3436;
+            margin-bottom: 30px;
+            line-height: 1.5;
+            min-height: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        input[type="number"] {
+            width: 100%;
+            padding: 15px 20px;
+            font-size: 20px;
+            border: 3px solid #dfe6e9;
+            border-radius: 12px;
+            outline: none;
+            transition: all 0.3s ease;
+            background: white;
+            text-align: center;
+        }
+
+        input[type="number"]:focus {
+            border-color: #764ba2;
+            box-shadow: 0 0 0 5px rgba(118, 75, 162, 0.1);
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            font-size: 18px;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: bold;
+            letter-spacing: 1px;
+            width: 100%;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(118, 75, 162, 0.3);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .message {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 12px;
+            font-weight: bold;
+            display: none;
+        }
+
+        .message.error {
+            display: block;
+            background: #ffeaa7;
+            color: #d63031;
+        }
+
+        .message.success {
+            display: block;
+            background: #55efc4;
+            color: #00b894;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 6px;
+            background: #dfe6e9;
+            border-radius: 3px;
+            margin-top: 30px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 3px;
+            transition: width 0.5s ease;
+            width: 0%;
+        }
+
+        .hearts {
+            font-size: 30px;
+            margin-top: 20px;
+            animation: pulse 1.5s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        .success-page {
+            display: none;
+        }
+
+        .success-page.active {
+            display: block;
+        }
+
+        .success-page img {
+            max-width: 100%;
+            border-radius: 16px;
+            margin: 20px 0;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .success-page .message-text {
+            font-size: 22px;
+            color: #2d3436;
+            margin: 20px 0;
+            line-height: 1.6;
+        }
+
+        .success-page .btn-next {
+            background: linear-gradient(135deg, #00b894 0%, #00a86b 100%);
+        }
+
+        .success-page .btn-next:hover {
+            box-shadow: 0 10px 30px rgba(0, 184, 148, 0.3);
+        }
+
+        .question-page {
+            display: block;
+        }
+
+        .question-page.hidden {
+            display: none;
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 25px;
+            }
+            .question-text {
+                font-size: 20px;
+                min-height: 60px;
+            }
+            input[type="number"] {
+                font-size: 18px;
+                padding: 12px 15px;
+            }
+            .btn {
+                padding: 12px 30px;
+                font-size: 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container" id="app">
+        <div class="question-page" id="questionPage">
+            <div class="question-number" id="questionNumber">Вопрос 1 из 8</div>
+            <div class="question-text" id="questionText">Загрузка вопроса...</div>
+            <div class="input-group">
+                <input type="number" id="answerInput" placeholder="Введи свой ответ..." autofocus>
+            </div>
+            <button class="btn" id="submitBtn">Ответить ❤️</button>
+            <div class="message" id="message"></div>
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill"></div>
+            </div>
+            <div class="hearts">❤️</div>
+        </div>
+
+        <div class="success-page" id="successPage">
+            <div class="question-number" id="successNumber">Вопрос 1 из 8</div>
+            <h2 style="color: #00b894; margin-bottom: 10px;">✅ Правильно!</h2>
+            <div class="message-text" id="successMessage">Твой текст с картинками!</div>
+            <div id="successImages"></div>
+            <button class="btn btn-next" id="nextBtn">Дальше ➜</button>
+            <div class="hearts">❤️</div>
+        </div>
+    </div>
+
+    <script>
+        // ===== ТВОИ ДАННЫЕ =====
+        const questions = [
+            {
+                question: "Какого мозга? Ты здесь реально припарковался. Но где же ты могла сказать эти слова?",
+                answer: 1205,
+                successText: "12.05! ❤️\n(здесь будет твой текст с картинками)",
+                images: []
+            },
+            {
+                question: "Сколько раз мы были в кино?",
+                answer: 452,
+                successText: "452 раза! Мы обожаем кино! 🎬",
+                images: []
+            },
+            {
+                question: "Сколько раз мы ссорились?",
+                answer: 0,
+                successText: "0 раз! Мы идеальная пара! 💕",
+                images: []
+            },
+            {
+                question: "Сколько часов я ждал тебя у подъезда?",
+                answer: 80,
+                successText: "80 часов! И это того стоило! 😍",
+                images: []
+            },
+            {
+                question: "Сколько раз я говорил тебе 'Я люблю тебя'?",
+                answer: 67,
+                successText: "67 раз... но на самом деле намного больше! 💖",
+                images: []
+            },
+            {
+                question: "Сколько раз мы ели пиццу вместе?",
+                answer: 0,
+                successText: "0 раз? Надо исправить! 🍕",
+                images: []
+            },
+            {
+                question: "Сколько дней до нашей годовщины? (я изменю это позже)",
+                answer: 933,
+                successText: "933 дня! Но я изменю этот ответ позже 😉",
+                images: []
+            },
+            {
+                question: "Сколько у меня есть ты? (подсказка: ты у меня одна ❤️)",
+                answer: 1,
+                successText: "Правильно! Ты у меня одна и единственная! 💕",
+                images: []
+            }
+        ];
+        // ===== КОНЕЦ ТВОИХ ДАННЫХ =====
+
+        let currentQuestion = 0;
+        const totalQuestions = questions.length;
+
+        const questionPage = document.getElementById('questionPage');
+        const successPage = document.getElementById('successPage');
+        const questionNumber = document.getElementById('questionNumber');
+        const questionText = document.getElementById('questionText');
+        const answerInput = document.getElementById('answerInput');
+        const submitBtn = document.getElementById('submitBtn');
+        const message = document.getElementById('message');
+        const progressFill = document.getElementById('progressFill');
+        const successNumber = document.getElementById('successNumber');
+        const successMessage = document.getElementById('successMessage');
+        const successImages = document.getElementById('successImages');
+        const nextBtn = document.getElementById('nextBtn');
+
+        function loadQuestion(index) {
+            const q = questions[index];
+            questionNumber.textContent = `Вопрос ${index + 1} из ${totalQuestions}`;
+            questionText.textContent = q.question;
+            answerInput.value = '';
+            answerInput.focus();
+            message.className = 'message';
+            message.textContent = '';
+            submitBtn.disabled = false;
+            answerInput.disabled = false;
+            updateProgress();
+            
+            questionPage.classList.remove('hidden');
+            successPage.classList.remove('active');
+        }
+
+        function updateProgress() {
+            const percent = ((currentQuestion) / totalQuestions) * 100;
+            progressFill.style.width = percent + '%';
+        }
+
+        function showSuccess(index) {
+            const q = questions[index];
+            successNumber.textContent = `Вопрос ${index + 1} из ${totalQuestions}`;
+            successMessage.textContent = q.successText;
+            
+            successImages.innerHTML = '';
+            if (q.images && q.images.length > 0) {
+                q.images.forEach(src => {
+                    const img = document.createElement('img');
+                    img.src = src;
+                    img.alt = 'Наше фото';
+                    img.style.maxWidth = '100%';
+                    img.style.borderRadius = '12px';
+                    img.style.margin = '10px 0';
+                    successImages.appendChild(img);
+                });
+            }
+
+            if (index === totalQuestions - 1) {
+                nextBtn.textContent = '🎉 Финал!';
+            } else {
+                nextBtn.textContent = 'Дальше ➜';
+            }
+
+            questionPage.classList.add('hidden');
+            successPage.classList.add('active');
+        }
+
+        submitBtn.addEventListener('click', function() {
+            const q = questions[currentQuestion];
+            const userAnswer = parseInt(answerInput.value);
+            
+            if (isNaN(userAnswer)) {
+                message.className = 'message error';
+                message.textContent = '❌ Введи число!';
+                return;
+            }
+
+            if (userAnswer === q.answer) {
+                message.className = 'message success';
+                message.textContent = '🎉 Правильно!';
+                submitBtn.disabled = true;
+                answerInput.disabled = true;
+                
+                setTimeout(() => {
+                    showSuccess(currentQuestion);
+                }, 500);
+            } else {
+                message.className = 'message error';
+                message.textContent = '❌ Неправильно! Попробуй ещё раз...';
+                answerInput.value = '';
+                answerInput.focus();
+            }
+        });
+
+        answerInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                submitBtn.click();
+            }
+        });
+
+        nextBtn.addEventListener('click', function() {
+            currentQuestion++;
+            if (currentQuestion < totalQuestions) {
+                loadQuestion(currentQuestion);
+            } else {
+                questionPage.classList.add('hidden');
+                successPage.classList.remove('active');
+                document.querySelector('.container').innerHTML = `
+                    <div style="padding: 40px 20px;">
+                        <h1 style="color: #2d3436; font-size: 32px;">🎉 Поздравляю!</h1>
+                        <p style="font-size: 20px; color: #636e72; margin: 20px 0;">Ты прошла все вопросы!</p>
+                        <div style="font-size: 60px; margin: 30px 0;">❤️💕❤️</div>
+                        <p style="font-size: 18px; color: #2d3436;">Ты лучшая девушка на свете!</p>
+                        <p style="font-size: 16px; color: #636e72; margin-top: 20px;">Сделано с любовью ❤️</p>
+                    </div>
+                `;
+            }
+        });
+
+        loadQuestion(0);
+    </script>
+</body>
+</html>
