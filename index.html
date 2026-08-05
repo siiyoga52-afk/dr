@@ -208,7 +208,7 @@
         .puzzle-grid {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
-            gap: 2px;
+            gap: 3px;
             max-width: 360px;
             margin: 0 auto 14px;
             aspect-ratio: 1/1;
@@ -217,8 +217,8 @@
         }
         .puzzle-piece {
             background: #e8ddd0;
-            border-radius: 0px;
-            background-size: 300% 300%;
+            border-radius: 2px;
+            background-size: cover;
             background-repeat: no-repeat;
             cursor: pointer;
             transition: all 0.2s ease;
@@ -329,7 +329,6 @@
             padding: 8px;
             margin: 6px 0 12px;
             touch-action: none;
-            cursor: grab;
         }
         .maze-wrap canvas {
             display: block;
@@ -801,10 +800,12 @@
     }
 
     // ============================================================
-    //  ИСПРАВЛЕННЫЙ ПАЗЛ - через clip
+    //  ПАЗЛ - готовые фрагменты
     // ============================================================
     function game_puzzle(container, onWin) {
-        const imgSrc = 'images/photo17.jpg';
+        const total = 9;
+        const size = 3;
+        
         container.innerHTML = `
             <div style="font-size:16px;color:#6b5a4a;margin-bottom:10px;">Кликни на два фрагмента, чтобы поменять их местами</div>
             <div class="puzzle-grid" id="puzzleGrid"></div>
@@ -812,9 +813,8 @@
         `;
         const grid = container.querySelector('#puzzleGrid');
         const status = container.querySelector('#puzzleStatus');
-        const size = 3;
-        const total = size * size;
         
+        // Массив с номерами фрагментов в правильном порядке
         let pieces = [];
         for (let i = 0; i < total; i++) pieces.push(i);
         
@@ -844,47 +844,17 @@
 
         function render() {
             grid.innerHTML = '';
-            // Загружаем картинку один раз для получения размеров
-            const img = new Image();
-            img.src = imgSrc;
-            img.onload = function() {
-                // Не используем onload, рендерим сразу с процентами
-            };
-            
             for (let i = 0; i < total; i++) {
-                const value = pieces[i];
+                const value = pieces[i]; // номер фрагмента (1-9)
                 const div = document.createElement('div');
                 div.className = 'puzzle-piece';
                 div.style.cursor = 'pointer';
-                div.style.width = '100%';
-                div.style.height = '100%';
-                div.style.position = 'relative';
-                div.style.border = '1px solid #d4c8b8';
-                div.style.overflow = 'hidden';
-                div.style.transition = 'all 0.2s ease';
-                div.style.aspectRatio = '1/1';
                 
-                // Используем clip-path для правильной нарезки
-                // Каждый фрагмент должен показывать свою часть картинки
-                // value - это номер фрагмента (0-8), который определяет какую часть картинки показывать
-                const col = value % size;
-                const row = Math.floor(value / size);
-                
-                // Вычисляем позицию в процентах для background-position
-                // Каждый фрагмент занимает 1/3 ширины и 1/3 высоты
-                const xPos = (col / size) * 100;
-                const yPos = (row / size) * 100;
-                const sizePercent = 100 / size;
-                
-                // Устанавливаем фон с правильной позицией
-                div.style.backgroundImage = `url(${imgSrc})`;
-                div.style.backgroundSize = '300% 300%';
-                div.style.backgroundPosition = `${xPos}% ${yPos}%`;
-                div.style.backgroundRepeat = 'no-repeat';
-                
-                // Добавляем clip-path для обрезки до нужного фрагмента
-                // Но проще использовать background-size и background-position
-                // Уже сделано выше
+                // Фрагменты называются photo17_1.jpg ... photo17_9.jpg
+                const imgPath = `images/photo17_${value + 1}.jpg`;
+                div.style.backgroundImage = `url(${imgPath})`;
+                div.style.backgroundSize = 'cover';
+                div.style.backgroundPosition = 'center';
                 
                 div.dataset.index = i;
                 div.dataset.value = value;
@@ -1301,7 +1271,7 @@
     }
 
     // ============================================================
-    //  ИСПРАВЛЕННЫЙ ЛАБИРИНТ - с гарантированным проходом
+    //  ИСПРАВЛЕННЫЙ ЛАБИРИНТ
     // ============================================================
     function game_maze(container, onWin) {
         container.innerHTML = `
@@ -1321,8 +1291,6 @@
 
         // Проверенный лабиринт 9x9 с гарантированным проходом от (0,0) до (8,8)
         // 0 = проход, 1 = стена
-        // Стены между клетками (вертикальные и горизонтальные)
-        // Вертикальные стены: wallsV[r][c] - стена справа от клетки (r,c)
         const wallsV = [
             [0, 0, 1, 1, 0, 0, 1, 1],
             [0, 0, 1, 0, 0, 1, 0, 1],
@@ -1335,7 +1303,6 @@
             [1, 0, 1, 1, 1, 0, 1, 1]
         ];
 
-        // Горизонтальные стены: wallsH[r][c] - стена снизу от клетки (r,c)
         const wallsH = [
             [0, 1, 1, 0, 0, 0, 0, 0, 0],
             [0, 0, 0, 0, 0, 0, 0, 0, 1],
@@ -1348,56 +1315,15 @@
             [1, 0, 0, 0, 0, 0, 0, 0, 0]
         ];
 
-        // Проверяем, что есть путь от старта до финиша
-        function hasPath() {
-            const visited = Array.from({length: rows}, () => Array(cols).fill(false));
-            const queue = [[0, 0]];
-            visited[0][0] = true;
-            
-            while (queue.length > 0) {
-                const [r, c] = queue.shift();
-                if (r === rows-1 && c === cols-1) return true;
-                
-                // Проверяем все 4 направления
-                // Вверх
-                if (r > 0 && wallsH[r-1][c] === 0 && !visited[r-1][c]) {
-                    visited[r-1][c] = true;
-                    queue.push([r-1, c]);
-                }
-                // Вниз
-                if (r < rows-1 && wallsH[r][c] === 0 && !visited[r+1][c]) {
-                    visited[r+1][c] = true;
-                    queue.push([r+1, c]);
-                }
-                // Влево
-                if (c > 0 && wallsV[r][c-1] === 0 && !visited[r][c-1]) {
-                    visited[r][c-1] = true;
-                    queue.push([r, c-1]);
-                }
-                // Вправо
-                if (c < cols-1 && wallsV[r][c] === 0 && !visited[r][c+1]) {
-                    visited[r][c+1] = true;
-                    queue.push([r, c+1]);
-                }
-            }
-            return false;
-        }
-
-        // Если пути нет - генерируем заново (запасной вариант)
-        // Но у нас уже проверенный лабиринт
-
         let playerR = 0, playerC = 0;
         let isDragging = false;
-        let dragStartR = 0, dragStartC = 0;
 
         function drawMaze() {
             ctx.clearRect(0, 0, W, H);
             
-            // Фон
             ctx.fillStyle = '#faf5f0';
             ctx.fillRect(0, 0, W, H);
 
-            // Рисуем стены
             ctx.strokeStyle = '#4a3729';
             ctx.lineWidth = 3;
 
@@ -1425,7 +1351,6 @@
                 }
             }
 
-            // Внешние стены
             ctx.strokeRect(0, 0, W, H);
 
             // Старт и финиш
@@ -1433,9 +1358,7 @@
             ctx.fillStyle = '#c97a5a';
             ctx.fillText('❤️', 8, 38);
             ctx.fillStyle = '#d4a88a';
-            const endX = (cols-1) * cellSize + 8;
-            const endY = (rows-1) * cellSize + 38;
-            ctx.fillText('🏆', endX, endY);
+            ctx.fillText('🏆', (cols-1)*cellSize + 8, (rows-1)*cellSize + 38);
 
             // Игрок
             const px = playerC * cellSize + cellSize/2;
@@ -1490,52 +1413,46 @@
             const clientY = e.touches ? e.touches[0].clientY : e.clientY;
             const x = (clientX - rect.left) * scaleX;
             const y = (clientY - rect.top) * scaleY;
-            const c = Math.floor(x / cellSize);
-            const r = Math.floor(y / cellSize);
-            return { r, c };
-        }
-
-        function onStart(e) {
-            e.preventDefault();
-            const pos = getCellFromPos(e);
-            if (pos.r === playerR && pos.c === playerC) {
-                isDragging = true;
-                dragStartR = playerR;
-                dragStartC = playerC;
-                canvas.style.cursor = 'grabbing';
-            }
+            return {
+                c: Math.floor(x / cellSize),
+                r: Math.floor(y / cellSize)
+            };
         }
 
         function onMove(e) {
             e.preventDefault();
-            if (!isDragging) return;
             const pos = getCellFromPos(e);
-            const dr = pos.r - dragStartR;
-            const dc = pos.c - dragStartC;
+            const dr = pos.r - playerR;
+            const dc = pos.c - playerC;
             
+            // Движение только на соседнюю клетку
             if (Math.abs(dr) + Math.abs(dc) === 1) {
-                if (tryMoveTo(pos.r, pos.c)) {
-                    dragStartR = playerR;
-                    dragStartC = playerC;
-                }
+                tryMoveTo(pos.r, pos.c);
             }
         }
 
-        function onEnd(e) {
+        // Клик по клетке
+        canvas.addEventListener('click', onMove);
+        
+        // Тач для мобильных
+        canvas.addEventListener('touchstart', function(e) {
             e.preventDefault();
-            isDragging = false;
-            canvas.style.cursor = 'grab';
-        }
+            const touch = e.touches[0];
+            const rect = canvas.getBoundingClientRect();
+            const scaleX = canvas.width / rect.width;
+            const scaleY = canvas.height / rect.height;
+            const x = (touch.clientX - rect.left) * scaleX;
+            const y = (touch.clientY - rect.top) * scaleY;
+            const c = Math.floor(x / cellSize);
+            const r = Math.floor(y / cellSize);
+            const dr = r - playerR;
+            const dc = c - playerC;
+            if (Math.abs(dr) + Math.abs(dc) === 1) {
+                tryMoveTo(r, c);
+            }
+        });
 
-        canvas.addEventListener('mousedown', onStart);
-        canvas.addEventListener('mousemove', onMove);
-        canvas.addEventListener('mouseup', onEnd);
-        canvas.addEventListener('mouseleave', onEnd);
-        canvas.addEventListener('touchstart', onStart);
-        canvas.addEventListener('touchmove', onMove);
-        canvas.addEventListener('touchend', onEnd);
-
-        canvas.style.cursor = 'grab';
+        canvas.style.cursor = 'pointer';
         drawMaze();
     }
 
