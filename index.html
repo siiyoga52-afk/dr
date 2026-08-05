@@ -225,8 +225,6 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 36px;
-            color: #b8a898;
             width: 100%;
             height: 100%;
             overflow: hidden;
@@ -797,7 +795,7 @@
     }
 
     // ============================================================
-    //  НОВАЯ ВЕРСИЯ ПАЗЛА - обмен двух фрагментов
+    //  НОВАЯ ВЕРСИЯ ПАЗЛА - без пустого места
     // ============================================================
     function game_puzzle(container, onWin) {
         const imgSrc = 'images/photo17.jpg';
@@ -821,12 +819,18 @@
                 while (j === i) j = Math.floor(Math.random() * total);
                 [pieces[i], pieces[j]] = [pieces[j], pieces[i]];
             }
-            let hasEmpty = false;
+            // Проверяем, чтобы не было случайно собранного пазла
+            let isSolved = true;
             for (let i = 0; i < total; i++) {
-                if (pieces[i] === i) { hasEmpty = true; break; }
+                if (pieces[i] !== i) { isSolved = false; break; }
             }
-            if (!hasEmpty) {
-                pieces[total - 1] = total - 1;
+            if (isSolved) {
+                for (let step = 0; step < 50; step++) {
+                    const i = Math.floor(Math.random() * total);
+                    let j = Math.floor(Math.random() * total);
+                    while (j === i) j = Math.floor(Math.random() * total);
+                    [pieces[i], pieces[j]] = [pieces[j], pieces[i]];
+                }
             }
         }
         shuffle();
@@ -848,31 +852,19 @@
                 div.style.overflow = 'hidden';
                 div.style.transition = 'all 0.2s ease';
                 
-                if (value === i) {
-                    div.style.background = '#e8ddd0';
-                    div.innerHTML = '⬜';
-                    div.style.display = 'flex';
-                    div.style.alignItems = 'center';
-                    div.style.justifyContent = 'center';
-                    div.style.fontSize = '36px';
-                    div.style.color = '#b8a898';
-                    div.dataset.empty = 'true';
-                } else {
-                    const col = value % size;
-                    const row = Math.floor(value / size);
-                    const xPercent = col * 33.33;
-                    const yPercent = row * 33.33;
-                    div.style.backgroundImage = `url(${imgSrc})`;
-                    div.style.backgroundSize = '300% 300%';
-                    div.style.backgroundPosition = `${xPercent}% ${yPercent}%`;
-                    div.style.backgroundRepeat = 'no-repeat';
-                    div.dataset.empty = 'false';
-                    div.innerHTML = '';
-                }
+                const col = value % size;
+                const row = Math.floor(value / size);
+                const xPercent = col * 33.33;
+                const yPercent = row * 33.33;
+                div.style.backgroundImage = `url(${imgSrc})`;
+                div.style.backgroundSize = '300% 300%';
+                div.style.backgroundPosition = `${xPercent}% ${yPercent}%`;
+                div.style.backgroundRepeat = 'no-repeat';
+                
                 div.dataset.index = i;
                 div.dataset.value = value;
                 
-                if (selectedIndex === i && div.dataset.empty === 'false') {
+                if (selectedIndex === i) {
                     div.style.border = '4px solid #c97a5a';
                     div.style.boxShadow = '0 0 20px rgba(201, 122, 90, 0.5)';
                     div.style.transform = 'scale(1.02)';
@@ -891,8 +883,7 @@
                 status.style.fontWeight = 'bold';
                 onWin();
             } else {
-                const placed = correct - 1;
-                status.textContent = `Собрано ${placed} из ${total - 1}`;
+                status.textContent = `Собрано ${correct} из ${total}`;
                 status.style.color = '#8a7a6a';
                 status.style.fontWeight = 'normal';
             }
@@ -901,14 +892,6 @@
         function handleClick(e) {
             const el = e.target.closest('.puzzle-piece');
             if (!el) return;
-            
-            if (el.dataset.empty === 'true') {
-                if (selectedIndex !== null) {
-                    selectedIndex = null;
-                    render();
-                }
-                return;
-            }
             
             const clickedIndex = parseInt(el.dataset.index);
             
