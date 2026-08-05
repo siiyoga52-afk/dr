@@ -1268,13 +1268,13 @@
     }
 
     // ============================================================
-    //  СЛОЖНЫЙ ЛАБИРИНТ 11x11 (ручной, гарантированно проходимый)
+    //  СЛОЖНЫЙ ЛАБИРИНТ 13x13
     // ============================================================
     function game_maze(container, onWin) {
         container.innerHTML = `
             <div style="font-size:16px;color:#6b5a4a;margin-bottom:6px;">Проведи от ❤️ до 🏆, не касаясь стен</div>
             <div class="maze-wrap">
-                <canvas id="mazeCanvas" width="440" height="440"></canvas>
+                <canvas id="mazeCanvas" width="520" height="520"></canvas>
             </div>
             <div id="mazeStatus" style="font-size:16px;color:#8a7a6a;"></div>
         `;
@@ -1282,41 +1282,77 @@
         const ctx = canvas.getContext('2d');
         const status = container.querySelector('#mazeStatus');
 
-        const W = 440, H = 440;
-        const cols = 11, rows = 11;
+        const W = 520, H = 520;
+        const cols = 13, rows = 13;
         const cellSize = W / cols;
 
-        // Сложный ручной лабиринт 11x11
+        // СЛОЖНЫЙ ЛАБИРИНТ 13x13 с кучей тупиков и поворотов
         // 0 = проход, 1 = стена
         // Вертикальные стены: wallsV[r][c] - стена справа от клетки (r,c)
         const wallsV = [
-            [0,0,1,0,0,1,0,0,1,0],
-            [1,0,1,0,0,1,1,0,1,0],
-            [1,0,0,0,0,0,1,0,0,0],
-            [0,1,0,0,0,1,0,1,0,0],
-            [0,0,0,1,0,0,0,1,0,1],
-            [1,0,1,1,0,0,0,0,0,0],
-            [0,1,0,0,0,1,1,0,1,0],
-            [0,0,0,0,0,0,1,1,0,0],
-            [1,0,1,0,1,1,0,0,0,1],
-            [1,0,0,0,1,0,0,1,0,1],
-            [0,0,1,0,0,0,0,1,1,0]
+            [0,0,1,0,0,0,1,0,0,1,0,0],
+            [1,0,1,0,0,1,0,0,1,0,1,0],
+            [0,0,1,1,0,1,0,0,1,0,0,0],
+            [0,0,0,1,0,1,1,0,0,1,0,0],
+            [1,0,0,0,0,0,1,0,0,0,0,1],
+            [1,0,1,0,1,0,0,0,0,0,1,0],
+            [0,0,1,0,1,0,0,1,0,0,0,0],
+            [0,0,0,0,0,0,1,1,0,1,0,0],
+            [1,0,1,0,0,0,0,1,0,0,0,0],
+            [1,0,0,0,1,0,0,0,0,1,0,0],
+            [0,0,1,0,1,0,1,0,0,0,1,0],
+            [0,1,0,0,0,1,0,0,1,0,1,0],
+            [0,0,1,0,0,0,0,0,0,0,0,0]
         ];
 
         // Горизонтальные стены: wallsH[r][c] - стена снизу от клетки (r,c)
         const wallsH = [
-            [0,1,0,0,0,0,1,0,0,0,0],
-            [0,1,1,1,1,0,0,0,0,0,1],
-            [0,0,0,0,1,0,0,0,1,0,0],
-            [0,0,0,0,1,0,0,1,0,0,0],
-            [1,1,0,0,1,0,0,0,0,1,0],
-            [0,0,0,0,0,0,1,0,0,0,0],
-            [0,1,0,0,1,0,0,1,0,0,0],
-            [1,0,0,0,1,0,0,0,0,1,0],
-            [1,0,0,0,1,0,1,0,0,0,0],
-            [1,1,0,0,0,0,0,0,0,1,0],
-            [0,0,0,1,1,0,0,0,0,0,0]
+            [0,0,0,0,0,0,0,0,0,0,0,0,0],
+            [1,1,0,0,1,0,0,1,0,0,0,0,0],
+            [1,0,0,1,0,0,0,1,0,0,0,1,0],
+            [1,0,1,0,0,0,1,0,0,0,0,0,0],
+            [0,0,0,0,0,0,0,1,0,0,1,0,1],
+            [0,0,0,1,0,0,0,0,0,0,0,0,0],
+            [0,0,0,0,0,1,0,0,0,0,0,1,0],
+            [1,0,0,0,1,0,0,0,1,0,0,0,0],
+            [0,0,0,0,0,0,0,0,0,0,0,0,1],
+            [0,0,0,1,0,0,0,0,0,0,1,0,1],
+            [0,0,0,0,0,0,0,1,0,0,0,0,0],
+            [0,0,0,0,0,0,0,0,0,0,0,0,1],
+            [0,0,0,1,0,0,0,0,0,0,0,0,0]
         ];
+
+        // Проверяем, что есть путь от (0,0) до (12,12)
+        function checkPath() {
+            const visited = Array.from({length: rows}, () => Array(cols).fill(false));
+            const queue = [[0, 0]];
+            visited[0][0] = true;
+            while (queue.length > 0) {
+                const [r, c] = queue.shift();
+                if (r === rows-1 && c === cols-1) return true;
+                // Вверх
+                if (r > 0 && wallsH[r-1][c] === 0 && !visited[r-1][c]) {
+                    visited[r-1][c] = true;
+                    queue.push([r-1, c]);
+                }
+                // Вниз
+                if (r < rows-1 && wallsH[r][c] === 0 && !visited[r+1][c]) {
+                    visited[r+1][c] = true;
+                    queue.push([r+1, c]);
+                }
+                // Влево
+                if (c > 0 && wallsV[r][c-1] === 0 && !visited[r][c-1]) {
+                    visited[r][c-1] = true;
+                    queue.push([r, c-1]);
+                }
+                // Вправо
+                if (c < cols-1 && wallsV[r][c] === 0 && !visited[r][c+1]) {
+                    visited[r][c+1] = true;
+                    queue.push([r, c+1]);
+                }
+            }
+            return false;
+        }
 
         let posX = 0.5, posY = 0.5;
         let isDragging = false;
@@ -1356,11 +1392,11 @@
             ctx.strokeRect(0, 0, W, H);
 
             // Старт и финиш
-            ctx.font = '22px sans-serif';
+            ctx.font = '20px sans-serif';
             ctx.fillStyle = '#c97a5a';
-            ctx.fillText('❤️', 8, 32);
+            ctx.fillText('❤️', 8, 30);
             ctx.fillStyle = '#d4a88a';
-            ctx.fillText('🏆', (cols-1)*cellSize + 8, (rows-1)*cellSize + 32);
+            ctx.fillText('🏆', (cols-1)*cellSize + 8, (rows-1)*cellSize + 30);
 
             // Игрок
             const px = posX * cellSize;
@@ -1385,7 +1421,6 @@
             const offsetX = x - c;
             const offsetY = y - r;
             
-            // Проверка стен
             if (offsetX > 0.7 && c < cols - 1 && wallsV[r][c] === 1) return false;
             if (offsetX < 0.3 && c > 0 && wallsV[r][c-1] === 1) return false;
             if (offsetY > 0.7 && r < rows - 1 && wallsH[r][c] === 1) return false;
@@ -1400,7 +1435,6 @@
                 posY = Math.max(0.1, Math.min(rows - 0.1, y));
                 drawMaze();
                 
-                // Проверка финиша
                 if (Math.abs(posX - (cols - 0.5)) < 0.6 && Math.abs(posY - (rows - 0.5)) < 0.6) {
                     status.textContent = '🎉 Ты прошла лабиринт! Молодец! ❤️';
                     canvas.style.pointerEvents = 'none';
