@@ -217,6 +217,7 @@
             background: #e8ddd0;
             border-radius: 8px;
             background-size: 300% 300%;
+            background-repeat: no-repeat;
             cursor: pointer;
             transition: 0.15s;
             border: 2px solid #d4c8b8;
@@ -799,6 +800,7 @@
         });
     }
 
+    // ----- ИСПРАВЛЕННАЯ ИГРА: ПАЗЛ -----
     function game_puzzle(container, onWin) {
         const imgSrc = 'images/photo17.jpg';
         container.innerHTML = `
@@ -813,10 +815,12 @@
         let pieces = [];
         for (let i = 0; i < total; i++) pieces.push(i);
         
+        // Перемешиваем
         for (let i = pieces.length - 1; i > 0; i--) {
             const j = Math.floor(Math.random() * (i + 1));
             [pieces[i], pieces[j]] = [pieces[j], pieces[i]];
         }
+        // Убеждаемся, что не все на месте
         let allPlaced = true;
         for (let i = 0; i < total; i++) {
             if (pieces[i] !== i) { allPlaced = false; break; }
@@ -831,7 +835,10 @@
                 const idx = pieces[i];
                 const div = document.createElement('div');
                 div.className = 'puzzle-piece';
+                div.style.cursor = 'pointer';
+                
                 if (idx === i) {
+                    // пустое место
                     div.classList.add('placed');
                     div.style.background = '#e8ddd0';
                     div.textContent = '⬜';
@@ -841,9 +848,12 @@
                     div.style.fontSize = '40px';
                     div.style.color = '#b8a898';
                     div.dataset.empty = 'true';
+                    div.style.backgroundImage = 'none';
                 } else {
+                    // фрагмент картинки
                     div.style.backgroundImage = `url(${imgSrc})`;
                     div.style.backgroundSize = '300% 300%';
+                    div.style.backgroundRepeat = 'no-repeat';
                     const col = idx % size;
                     const row = Math.floor(idx / size);
                     div.style.backgroundPosition = `${col * 33.33}% ${row * 33.33}%`;
@@ -868,18 +878,24 @@
             }
         }
 
+        // Обработчик клика по сетке
         grid.addEventListener('click', function(e) {
             const el = e.target.closest('.puzzle-piece');
             if (!el) return;
+            
+            // Если кликнули по пустому месту — игнорируем
             if (el.dataset.empty === 'true') return;
             
             const idx = parseInt(el.dataset.index);
+            
+            // Ищем пустое место
             let emptyIdx = -1;
             for (let i = 0; i < total; i++) {
                 if (pieces[i] === i) { emptyIdx = i; break; }
             }
             if (emptyIdx === -1) return;
             
+            // Проверяем, соседние ли клетки
             const idxRow = Math.floor(idx / size);
             const idxCol = idx % size;
             const emptyRow = Math.floor(emptyIdx / size);
@@ -888,6 +904,7 @@
             const isAdjacent = (Math.abs(idxRow - emptyRow) + Math.abs(idxCol - emptyCol)) === 1;
             if (!isAdjacent) return;
             
+            // Меняем местами
             [pieces[idx], pieces[emptyIdx]] = [pieces[emptyIdx], pieces[idx]];
             render();
         });
