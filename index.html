@@ -212,6 +212,7 @@
             max-width: 360px;
             margin: 0 auto 14px;
             aspect-ratio: 1/1;
+            width: 100%;
         }
         .puzzle-piece {
             background: #e8ddd0;
@@ -228,6 +229,7 @@
             width: 100%;
             height: 100%;
             overflow: hidden;
+            aspect-ratio: 1/1;
         }
         .puzzle-piece:hover { opacity: 0.85; }
 
@@ -400,11 +402,13 @@
             .word-chip { font-size: 15px; padding: 6px 12px; }
             .btn-yes, .btn-no { padding: 14px 30px; font-size: 22px; min-width: 90px; }
             .final-page .big-hearts { font-size: 40px; }
+            .puzzle-grid { max-width: 280px; }
         }
         @media (max-width: 380px) {
             .container { padding: 14px 10px; }
             .q-text { font-size: 17px; }
             .heart-grid { grid-template-columns: repeat(6, 1fr); }
+            .puzzle-grid { max-width: 220px; }
         }
     </style>
 </head>
@@ -795,126 +799,126 @@
     }
 
     // ============================================================
-    //  НОВАЯ ВЕРСИЯ ПАЗЛА - без пустого места
+    //  ПАЗЛ - 9 фрагментов, обмен по клику
     // ============================================================
-function game_puzzle(container, onWin) {
-    const imgSrc = 'images/photo17.jpg';
-    container.innerHTML = `
-        <div style="font-size:16px;color:#6b5a4a;margin-bottom:10px;">Кликни на два фрагмента, чтобы поменять их местами</div>
-        <div class="puzzle-grid" id="puzzleGrid"></div>
-        <div id="puzzleStatus" style="font-size:16px;color:#8a7a6a;margin-top:8px;"></div>
-    `;
-    const grid = container.querySelector('#puzzleGrid');
-    const status = container.querySelector('#puzzleStatus');
-    const size = 3;
-    const total = size * size;
-    
-    let pieces = [];
-    for (let i = 0; i < total; i++) pieces.push(i);
-    
-    function shuffle() {
-        for (let step = 0; step < 200; step++) {
-            const i = Math.floor(Math.random() * total);
-            let j = Math.floor(Math.random() * total);
-            while (j === i) j = Math.floor(Math.random() * total);
-            [pieces[i], pieces[j]] = [pieces[j], pieces[i]];
-        }
-        let isSolved = true;
-        for (let i = 0; i < total; i++) {
-            if (pieces[i] !== i) { isSolved = false; break; }
-        }
-        if (isSolved) {
-            for (let step = 0; step < 50; step++) {
+    function game_puzzle(container, onWin) {
+        const imgSrc = 'images/photo17.jpg';
+        container.innerHTML = `
+            <div style="font-size:16px;color:#6b5a4a;margin-bottom:10px;">Кликни на два фрагмента, чтобы поменять их местами</div>
+            <div class="puzzle-grid" id="puzzleGrid"></div>
+            <div id="puzzleStatus" style="font-size:16px;color:#8a7a6a;margin-top:8px;"></div>
+        `;
+        const grid = container.querySelector('#puzzleGrid');
+        const status = container.querySelector('#puzzleStatus');
+        const size = 3;
+        const total = size * size;
+        
+        let pieces = [];
+        for (let i = 0; i < total; i++) pieces.push(i);
+        
+        function shuffle() {
+            for (let step = 0; step < 200; step++) {
                 const i = Math.floor(Math.random() * total);
                 let j = Math.floor(Math.random() * total);
                 while (j === i) j = Math.floor(Math.random() * total);
                 [pieces[i], pieces[j]] = [pieces[j], pieces[i]];
             }
+            let isSolved = true;
+            for (let i = 0; i < total; i++) {
+                if (pieces[i] !== i) { isSolved = false; break; }
+            }
+            if (isSolved) {
+                for (let step = 0; step < 50; step++) {
+                    const i = Math.floor(Math.random() * total);
+                    let j = Math.floor(Math.random() * total);
+                    while (j === i) j = Math.floor(Math.random() * total);
+                    [pieces[i], pieces[j]] = [pieces[j], pieces[i]];
+                }
+            }
         }
-    }
-    shuffle();
+        shuffle();
 
-    let selectedIndex = null;
+        let selectedIndex = null;
 
-    function render() {
-        grid.innerHTML = '';
-        for (let i = 0; i < total; i++) {
-            const value = pieces[i];
-            const div = document.createElement('div');
-            div.className = 'puzzle-piece';
-            div.style.cursor = 'pointer';
-            div.style.width = '100%';
-            div.style.height = '100%';
-            div.style.position = 'relative';
-            div.style.border = '2px solid #d4c8b8';
-            div.style.borderRadius = '4px';
-            div.style.overflow = 'hidden';
-            div.style.transition = 'all 0.2s ease';
-            div.style.aspectRatio = '1/1';
-            
-            const col = value % size;
-            const row = Math.floor(value / size);
-            const xPercent = col * 33.33;
-            const yPercent = row * 33.33;
-            div.style.backgroundImage = `url(${imgSrc})`;
-            div.style.backgroundSize = '300% 300%';
-            div.style.backgroundPosition = `${xPercent}% ${yPercent}%`;
-            div.style.backgroundRepeat = 'no-repeat';
-            
-            div.dataset.index = i;
-            div.dataset.value = value;
-            
-            if (selectedIndex === i) {
-                div.style.border = '4px solid #c97a5a';
-                div.style.boxShadow = '0 0 20px rgba(201, 122, 90, 0.5)';
-                div.style.transform = 'scale(1.02)';
+        function render() {
+            grid.innerHTML = '';
+            for (let i = 0; i < total; i++) {
+                const value = pieces[i];
+                const div = document.createElement('div');
+                div.className = 'puzzle-piece';
+                div.style.cursor = 'pointer';
+                div.style.width = '100%';
+                div.style.height = '100%';
+                div.style.position = 'relative';
+                div.style.border = '2px solid #d4c8b8';
+                div.style.borderRadius = '4px';
+                div.style.overflow = 'hidden';
+                div.style.transition = 'all 0.2s ease';
+                div.style.aspectRatio = '1/1';
+                
+                const col = value % size;
+                const row = Math.floor(value / size);
+                const xPercent = col * 33.33;
+                const yPercent = row * 33.33;
+                div.style.backgroundImage = `url(${imgSrc})`;
+                div.style.backgroundSize = '300% 300%';
+                div.style.backgroundPosition = `${xPercent}% ${yPercent}%`;
+                div.style.backgroundRepeat = 'no-repeat';
+                
+                div.dataset.index = i;
+                div.dataset.value = value;
+                
+                if (selectedIndex === i) {
+                    div.style.border = '4px solid #c97a5a';
+                    div.style.boxShadow = '0 0 20px rgba(201, 122, 90, 0.5)';
+                    div.style.transform = 'scale(1.02)';
+                }
+                
+                grid.appendChild(div);
             }
             
-            grid.appendChild(div);
+            let correct = 0;
+            for (let i = 0; i < total; i++) {
+                if (pieces[i] === i) correct++;
+            }
+            if (correct === total) {
+                status.textContent = '🎉 Пазл собран! Молодец! ❤️';
+                status.style.color = '#4a8a6a';
+                status.style.fontWeight = 'bold';
+                onWin();
+            } else {
+                status.textContent = `Собрано ${correct} из ${total}`;
+                status.style.color = '#8a7a6a';
+                status.style.fontWeight = 'normal';
+            }
         }
-        
-        let correct = 0;
-        for (let i = 0; i < total; i++) {
-            if (pieces[i] === i) correct++;
-        }
-        if (correct === total) {
-            status.textContent = '🎉 Пазл собран! Молодец! ❤️';
-            status.style.color = '#4a8a6a';
-            status.style.fontWeight = 'bold';
-            onWin();
-        } else {
-            status.textContent = `Собрано ${correct} из ${total}`;
-            status.style.color = '#8a7a6a';
-            status.style.fontWeight = 'normal';
-        }
-    }
 
-    function handleClick(e) {
-        const el = e.target.closest('.puzzle-piece');
-        if (!el) return;
-        
-        const clickedIndex = parseInt(el.dataset.index);
-        
-        if (selectedIndex === null) {
-            selectedIndex = clickedIndex;
-            render();
-            return;
-        }
-        
-        if (selectedIndex === clickedIndex) {
+        function handleClick(e) {
+            const el = e.target.closest('.puzzle-piece');
+            if (!el) return;
+            
+            const clickedIndex = parseInt(el.dataset.index);
+            
+            if (selectedIndex === null) {
+                selectedIndex = clickedIndex;
+                render();
+                return;
+            }
+            
+            if (selectedIndex === clickedIndex) {
+                selectedIndex = null;
+                render();
+                return;
+            }
+            
+            [pieces[selectedIndex], pieces[clickedIndex]] = [pieces[clickedIndex], pieces[selectedIndex]];
             selectedIndex = null;
             render();
-            return;
         }
-        
-        [pieces[selectedIndex], pieces[clickedIndex]] = [pieces[clickedIndex], pieces[selectedIndex]];
-        selectedIndex = null;
+
+        grid.addEventListener('click', handleClick);
         render();
     }
-
-    grid.addEventListener('click', handleClick);
-    render();
-}
 
     function game_memory(container, onWin) {
         const images = [
