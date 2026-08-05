@@ -219,7 +219,7 @@
             background-size: 300% 300%;
             background-repeat: no-repeat;
             cursor: pointer;
-            transition: 0.15s;
+            transition: all 0.2s ease;
             border: 2px solid #d4c8b8;
             position: relative;
             display: flex;
@@ -231,8 +231,7 @@
             height: 100%;
             overflow: hidden;
         }
-        .puzzle-piece:hover { opacity: 0.8; transform: scale(0.95); }
-        .puzzle-piece.placed { border-color: #8a9a7a; }
+        .puzzle-piece:hover { opacity: 0.85; }
 
         .memory-grid {
             display: grid;
@@ -797,11 +796,13 @@
         });
     }
 
-    // ----- ИСПРАВЛЕННЫЙ ПАЗЛ -----
+    // ============================================================
+    //  НОВАЯ ВЕРСИЯ ПАЗЛА - обмен двух фрагментов
+    // ============================================================
     function game_puzzle(container, onWin) {
         const imgSrc = 'images/photo17.jpg';
         container.innerHTML = `
-            <div style="font-size:16px;color:#6b5a4a;margin-bottom:10px;">Кликни на фрагмент, чтобы поменять его с пустым местом</div>
+            <div style="font-size:16px;color:#6b5a4a;margin-bottom:10px;">Кликни на два фрагмента, чтобы поменять их местами</div>
             <div class="puzzle-grid" id="puzzleGrid"></div>
             <div id="puzzleStatus" style="font-size:16px;color:#8a7a6a;margin-top:8px;"></div>
         `;
@@ -830,12 +831,7 @@
         }
         shuffle();
 
-        function findEmpty() {
-            for (let i = 0; i < total; i++) {
-                if (pieces[i] === i) return i;
-            }
-            return -1;
-        }
+        let selectedIndex = null;
 
         function render() {
             grid.innerHTML = '';
@@ -850,6 +846,7 @@
                 div.style.border = '2px solid #d4c8b8';
                 div.style.borderRadius = '4px';
                 div.style.overflow = 'hidden';
+                div.style.transition = 'all 0.2s ease';
                 
                 if (value === i) {
                     div.style.background = '#e8ddd0';
@@ -874,6 +871,13 @@
                 }
                 div.dataset.index = i;
                 div.dataset.value = value;
+                
+                if (selectedIndex === i && div.dataset.empty === 'false') {
+                    div.style.border = '4px solid #c97a5a';
+                    div.style.boxShadow = '0 0 20px rgba(201, 122, 90, 0.5)';
+                    div.style.transform = 'scale(1.02)';
+                }
+                
                 grid.appendChild(div);
             }
             
@@ -897,24 +901,32 @@
         function handleClick(e) {
             const el = e.target.closest('.puzzle-piece');
             if (!el) return;
-            if (el.dataset.empty === 'true') return;
+            
+            if (el.dataset.empty === 'true') {
+                if (selectedIndex !== null) {
+                    selectedIndex = null;
+                    render();
+                }
+                return;
+            }
             
             const clickedIndex = parseInt(el.dataset.index);
-            const emptyIndex = findEmpty();
-            if (emptyIndex === -1) return;
             
-            const clickedRow = Math.floor(clickedIndex / size);
-            const clickedCol = clickedIndex % size;
-            const emptyRow = Math.floor(emptyIndex / size);
-            const emptyCol = emptyIndex % size;
-            
-            const rowDiff = Math.abs(clickedRow - emptyRow);
-            const colDiff = Math.abs(clickedCol - emptyCol);
-            
-            if ((rowDiff === 1 && colDiff === 0) || (rowDiff === 0 && colDiff === 1)) {
-                [pieces[clickedIndex], pieces[emptyIndex]] = [pieces[emptyIndex], pieces[clickedIndex]];
+            if (selectedIndex === null) {
+                selectedIndex = clickedIndex;
                 render();
+                return;
             }
+            
+            if (selectedIndex === clickedIndex) {
+                selectedIndex = null;
+                render();
+                return;
+            }
+            
+            [pieces[selectedIndex], pieces[clickedIndex]] = [pieces[clickedIndex], pieces[selectedIndex]];
+            selectedIndex = null;
+            render();
         }
 
         grid.addEventListener('click', handleClick);
