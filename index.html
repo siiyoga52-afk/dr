@@ -1,18 +1,19 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>День рождения ❤️</title>
     <style>
+        /* ── общие сбросы и базовые стили ── */
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
+            user-select: none;
         }
-
         body {
-            font-family: 'Arial', sans-serif;
+            font-family: 'Segoe UI', Arial, sans-serif;
             min-height: 100vh;
             display: flex;
             justify-content: center;
@@ -24,7 +25,6 @@
             background-attachment: fixed;
             position: relative;
         }
-
         body::before {
             content: '';
             position: fixed;
@@ -43,845 +43,1494 @@
             backdrop-filter: blur(20px);
             -webkit-backdrop-filter: blur(20px);
             border-radius: 24px;
-            padding: 40px;
+            padding: 30px 25px;
             max-width: 600px;
             width: 100%;
-            box-shadow: 
-                0 20px 60px rgba(139, 69, 19, 0.15),
-                0 0 0 1px rgba(255, 255, 255, 0.5) inset;
+            box-shadow: 0 20px 60px rgba(139, 69, 19, 0.15),
+                        0 0 0 1px rgba(255, 255, 255, 0.5) inset;
             text-align: center;
             transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
             animation: slideUp 0.6s ease-out;
+            min-height: 400px;
         }
-
         @keyframes slideUp {
-            from {
-                opacity: 0;
-                transform: translateY(30px) scale(0.95);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0) scale(1);
-            }
+            from { opacity: 0; transform: translateY(30px) scale(0.95); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
         }
 
-        .container:hover {
-            transform: translateY(-5px);
-            box-shadow: 
-                0 30px 80px rgba(139, 69, 19, 0.2),
-                0 0 0 1px rgba(255, 255, 255, 0.5) inset;
-        }
-
-        /* Вступление */
-        .intro-page {
-            display: block;
-        }
-
-        .intro-page.hidden {
-            display: none;
-        }
-
-        .intro-page h1 {
-            font-size: 36px;
-            color: #4a3729;
-            margin-bottom: 20px;
-            font-weight: 800;
-        }
-
-        .intro-page .intro-text {
-            font-size: 22px;
-            color: #4a3729;
-            line-height: 1.8;
-            margin: 20px 0 30px;
-        }
-
-        .intro-page .btn-start {
-            background: linear-gradient(135deg, #d4a88a 0%, #b8957a 100%);
-            color: white;
+        /* ── общие кнопки ── */
+        .btn {
+            background: linear-gradient(135deg, #d4a88a, #b8957a);
+            color: #fff;
             border: none;
-            padding: 18px 50px;
-            font-size: 22px;
+            padding: 14px 30px;
+            font-size: 18px;
             border-radius: 14px;
             cursor: pointer;
-            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
             font-weight: 700;
             letter-spacing: 1px;
             width: 100%;
             position: relative;
             overflow: hidden;
+            transition: 0.3s;
         }
+        .btn:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(184, 149, 122, 0.4); }
+        .btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; box-shadow: none; }
 
-        .intro-page .btn-start::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-            transition: left 0.6s;
+        .btn-next {
+            background: linear-gradient(135deg, #b8c4a8, #8a9a7a);
         }
+        .btn-next:hover { box-shadow: 0 8px 25px rgba(138, 154, 122, 0.4); }
 
-        .intro-page .btn-start:hover::before {
-            left: 100%;
-        }
+        /* ── страницы ── */
+        .page { display: none; }
+        .page.active { display: block; animation: fadePage 0.5s ease; }
+        @keyframes fadePage { from { opacity: 0; transform: scale(0.97); } to { opacity: 1; transform: scale(1); } }
 
-        .intro-page .btn-start:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 12px 30px rgba(184, 149, 122, 0.4);
-        }
+        /* ── intro ── */
+        .intro-page h1 { font-size: 34px; color: #4a3729; margin-bottom: 12px; }
+        .intro-page .intro-text { font-size: 20px; color: #4a3729; margin: 16px 0 28px; }
 
-        .question-number {
+        /* ── вопрос ── */
+        .q-number {
             color: #b8957a;
             font-size: 13px;
             font-weight: 700;
-            text-transform: uppercase;
             letter-spacing: 3px;
-            margin-bottom: 10px;
-            position: relative;
+            text-transform: uppercase;
             display: inline-block;
+            position: relative;
+            margin-bottom: 8px;
         }
-
-        .question-number::after {
+        .q-number::after {
             content: '';
-            position: absolute;
-            bottom: -4px;
-            left: 50%;
-            transform: translateX(-50%);
+            display: block;
             width: 30px;
             height: 2px;
             background: linear-gradient(90deg, #d4a88a, #b8957a);
+            margin: 4px auto 0;
             border-radius: 2px;
         }
-
-        .question-text {
-            font-size: 24px;
+        .q-text {
+            font-size: 22px;
             color: #4a3729;
-            margin: 25px 0 30px;
-            line-height: 1.6;
-            min-height: 80px;
+            margin: 18px 0 22px;
+            line-height: 1.5;
+            font-weight: 600;
+            min-height: 60px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-weight: 600;
-            position: relative;
         }
-
-        .question-text::before {
-            content: '💭';
-            position: absolute;
-            top: -20px;
-            left: -10px;
-            font-size: 20px;
-            opacity: 0.3;
-            animation: float 3s ease-in-out infinite;
-        }
-
-        @keyframes float {
-            0%, 100% { transform: translateY(0) rotate(0deg); }
-            50% { transform: translateY(-8px) rotate(5deg); }
-        }
-
-        .input-group {
-            margin-bottom: 20px;
-        }
-
-        input[type="number"] {
+        .q-input {
             width: 100%;
-            padding: 16px 20px;
+            padding: 14px 18px;
             font-size: 20px;
             border: 2px solid #e8d5c8;
             border-radius: 14px;
             outline: none;
-            transition: all 0.4s ease;
             background: rgba(255, 248, 245, 0.8);
             text-align: center;
             color: #4a3729;
             font-weight: 500;
+            transition: 0.3s;
         }
-
-        input[type="number"]:focus {
+        .q-input:focus {
             border-color: #d4a88a;
             box-shadow: 0 0 0 4px rgba(212, 168, 138, 0.2);
-            background: rgba(255, 248, 245, 0.95);
-            transform: scale(1.01);
         }
-
-        input[type="number"]::placeholder {
-            color: #c4b0a0;
-            font-weight: 400;
-        }
-
-        input[type="number"]::-webkit-inner-spin-button,
-        input[type="number"]::-webkit-outer-spin-button {
-            -webkit-appearance: none;
-            margin: 0;
-        }
-        input[type="number"] {
-            -moz-appearance: textfield;
-        }
-
-        .btn {
-            background: linear-gradient(135deg, #d4a88a 0%, #b8957a 100%);
-            color: white;
-            border: none;
-            padding: 16px 40px;
-            font-size: 18px;
-            border-radius: 14px;
-            cursor: pointer;
-            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-            font-weight: 700;
-            letter-spacing: 1px;
-            width: 100%;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .btn::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-            transition: left 0.6s;
-        }
-
-        .btn:hover::before {
-            left: 100%;
-        }
-
-        .btn:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 12px 30px rgba(184, 149, 122, 0.4);
-        }
-
-        .btn:active {
-            transform: translateY(0);
-        }
-
-        .btn:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-            transform: none;
-            box-shadow: none;
-        }
+        .q-input::placeholder { color: #c4b0a0; }
 
         .message {
-            margin-top: 20px;
-            padding: 14px 20px;
+            margin-top: 14px;
+            padding: 12px;
             border-radius: 12px;
             font-weight: 600;
             display: none;
-            animation: fadeInMessage 0.4s ease;
         }
-
-        @keyframes fadeInMessage {
-            from {
-                opacity: 0;
-                transform: translateY(-10px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .message.error {
-            display: block;
-            background: rgba(255, 205, 185, 0.6);
-            color: #b85a4a;
-            border: 1px solid rgba(184, 90, 74, 0.2);
-        }
-
-        .message.success {
-            display: block;
-            background: rgba(200, 230, 210, 0.6);
-            color: #4a8a6a;
-            border: 1px solid rgba(74, 138, 106, 0.2);
-        }
+        .message.error { display: block; background: rgba(255, 205, 185, 0.6); color: #b85a4a; }
+        .message.success { display: block; background: rgba(200, 230, 210, 0.6); color: #4a8a6a; }
 
         .progress-bar {
             width: 100%;
             height: 6px;
             background: rgba(232, 213, 200, 0.5);
             border-radius: 4px;
-            margin-top: 25px;
+            margin-top: 20px;
             overflow: hidden;
-            position: relative;
         }
-
         .progress-fill {
             height: 100%;
             background: linear-gradient(90deg, #d4a88a, #b8957a);
             border-radius: 4px;
             transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1);
             width: 0%;
-            position: relative;
         }
 
-        .progress-fill::after {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
-            animation: shimmer 2s infinite;
+        .hearts-bottom {
+            font-size: 26px;
+            margin-top: 16px;
+            opacity: 0.5;
+            animation: pulseHearts 2s infinite;
         }
-
-        @keyframes shimmer {
-            0% { transform: translateX(-100%); }
-            100% { transform: translateX(100%); }
-        }
-
-        .hearts {
-            font-size: 28px;
-            margin-top: 18px;
-            opacity: 0.6;
-            animation: pulseHearts 2s ease-in-out infinite;
-        }
-
         @keyframes pulseHearts {
-            0%, 100% { transform: scale(1); opacity: 0.6; }
+            0%, 100% { transform: scale(1); opacity: 0.5; }
             50% { transform: scale(1.1); opacity: 1; }
         }
 
-        /* Страница успеха */
-        .success-page {
-            display: none;
-        }
+        /* ── игра: угадай эмодзи ── */
+        .emoji-display { font-size: 64px; margin: 10px 0 16px; letter-spacing: 12px; }
+        .game-hint { font-size: 18px; color: #6b5a4a; margin-bottom: 14px; }
 
-        .success-page.active {
-            display: block;
-            animation: fadeInMessage 0.6s ease;
-        }
-
-        .success-page .image-container {
-            margin-bottom: 20px;
-            border-radius: 16px;
-            overflow: hidden;
-            box-shadow: 0 8px 30px rgba(139, 69, 19, 0.15);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-
-        .success-page .image-container img {
-            max-width: 100%;
-            max-height: 300px;
-            border-radius: 16px;
-            object-fit: cover;
-            transition: transform 0.6s ease;
-            display: block;
-        }
-
-        .success-page .image-container:hover img {
-            transform: scale(1.03);
-        }
-
-        .success-page .message-text {
-            font-size: 22px;
-            color: #4a3729;
-            margin: 20px 0;
-            line-height: 1.7;
-            font-weight: 500;
-        }
-
-        .success-page .btn-next {
-            background: linear-gradient(135deg, #b8c4a8 0%, #8a9a7a 100%);
-        }
-
-        .success-page .btn-next:hover {
-            box-shadow: 0 12px 30px rgba(138, 154, 122, 0.4);
-        }
-
-        .question-page {
-            display: none;
-        }
-
-        .question-page.active {
-            display: block;
-        }
-
-        .question-page.hidden {
-            display: none;
-        }
-
-        /* Финальный экран */
-        .final-page {
-            display: none;
-            padding: 20px 0;
-        }
-
-        .final-page.active {
-            display: block;
-            animation: fadeInFinal 1.2s ease;
-        }
-
-        @keyframes fadeInFinal {
-            0% {
-                opacity: 0;
-                transform: scale(0.9) rotate(-2deg);
-            }
-            50% {
-                transform: scale(1.02) rotate(0.5deg);
-            }
-            100% {
-                opacity: 1;
-                transform: scale(1) rotate(0deg);
-            }
-        }
-
-        .final-page h1 {
-            font-size: 34px;
-            color: #4a3729;
-            margin-bottom: 10px;
-            font-weight: 800;
-        }
-
-        .final-page .birthday-title {
-            font-size: 28px;
-            color: #c97a5a;
-            font-weight: 700;
+        /* ── игра: кликер-сердце ── */
+        .big-heart {
+            font-size: 120px;
+            cursor: pointer;
+            transition: 0.15s;
+            display: inline-block;
+            line-height: 1;
             margin: 10px 0;
         }
+        .big-heart:active { transform: scale(0.85); }
+        .click-counter { font-size: 28px; font-weight: 700; color: #4a3729; }
 
-        .final-page .big-hearts {
-            font-size: 70px;
-            margin: 15px 0;
-            animation: pulseHearts 1.5s ease-in-out infinite;
+        /* ── игра: пазл ── */
+        .puzzle-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 4px;
+            max-width: 360px;
+            margin: 0 auto 14px;
+            aspect-ratio: 1/1;
         }
+        .puzzle-piece {
+            background: #e8ddd0;
+            border-radius: 8px;
+            background-size: 300% 300%;
+            cursor: grab;
+            transition: 0.15s;
+            border: 2px solid #d4c8b8;
+            position: relative;
+        }
+        .puzzle-piece:active { cursor: grabbing; }
+        .puzzle-piece.dragging { opacity: 0.5; transform: scale(0.95); }
+        .puzzle-piece.placed { border-color: #8a9a7a; }
 
-        .final-page .final-image {
-            margin: 20px 0;
-            border-radius: 16px;
-            overflow: hidden;
-            box-shadow: 0 8px 30px rgba(139, 69, 19, 0.15);
-            transition: transform 0.6s ease;
+        /* ── игра: мемори ── */
+        .memory-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 8px;
+            max-width: 360px;
+            margin: 0 auto 14px;
+        }
+        .memory-card {
+            aspect-ratio: 1/1;
+            background: #d4a88a;
+            border-radius: 12px;
             display: flex;
-            justify-content: center;
             align-items: center;
+            justify-content: center;
+            font-size: 32px;
+            cursor: pointer;
+            transition: 0.3s;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            border: 2px solid #c8b0a0;
         }
+        .memory-card.flipped { background: #fff; border-color: #8a9a7a; transform: scale(0.96); }
+        .memory-card.matched { background: #b8c4a8; border-color: #6a8a5a; cursor: default; opacity: 0.7; }
+        .memory-card:not(.flipped):not(.matched):hover { transform: scale(1.04); }
 
-        .final-page .final-image:hover {
-            transform: scale(1.02);
-        }
-
-        .final-page .final-image img {
-            max-width: 100%;
-            max-height: 350px;
+        /* ── игра: дорисуй сердечко ── */
+        .draw-canvas-wrap {
+            background: #f5ede8;
             border-radius: 16px;
-            object-fit: cover;
+            padding: 8px;
+            margin: 6px 0 12px;
+            touch-action: none;
+        }
+        .draw-canvas-wrap canvas {
             display: block;
+            width: 100%;
+            height: auto;
+            aspect-ratio: 1/1;
+            border-radius: 12px;
+            background: #faf5f0;
+            touch-action: none;
         }
 
-        .final-page .love-text {
-            font-size: 22px;
+        /* ── игра: собери фразу ── */
+        .word-pool {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 8px;
+            margin: 10px 0 14px;
+            min-height: 52px;
+            padding: 6px;
+            background: #f5ede8;
+            border-radius: 12px;
+            border: 2px dashed #d4c8b8;
+        }
+        .word-chip {
+            background: #fff;
+            padding: 8px 16px;
+            border-radius: 30px;
+            font-size: 18px;
+            font-weight: 600;
             color: #4a3729;
-            line-height: 1.9;
-            margin: 20px 0;
+            cursor: pointer;
+            border: 2px solid #d4c8b8;
+            transition: 0.2s;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.04);
+        }
+        .word-chip:active { transform: scale(0.92); }
+        .word-chip.used { opacity: 0.3; cursor: default; transform: none; }
+
+        /* ── игра: найди целое сердечко ── */
+        .heart-grid {
+            display: grid;
+            grid-template-columns: repeat(8, 1fr);
+            gap: 6px;
+            max-width: 380px;
+            margin: 10px auto 14px;
+        }
+        .heart-cell {
+            aspect-ratio: 1/1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            cursor: pointer;
+            background: rgba(245, 237, 232, 0.4);
+            border-radius: 12px;
+            transition: 0.15s;
+        }
+        .heart-cell:hover { background: rgba(245, 237, 232, 0.8); }
+        .heart-cell.found { background: #b8c4a8; transform: scale(0.9); pointer-events: none; }
+
+        /* ── игра: лабиринт ── */
+        .maze-wrap {
+            background: #f5ede8;
+            border-radius: 16px;
+            padding: 8px;
+            margin: 6px 0 12px;
+            touch-action: none;
+        }
+        .maze-wrap canvas {
+            display: block;
+            width: 100%;
+            height: auto;
+            aspect-ratio: 1/1;
+            border-radius: 12px;
+            background: #faf5f0;
+            touch-action: none;
+            cursor: crosshair;
         }
 
-        .final-page .love-text .highlight {
-            color: #c97a5a;
+        /* ── финальный вопрос ── */
+        .final-question-buttons {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            margin: 20px 0 10px;
+            flex-wrap: wrap;
+        }
+        .btn-yes {
+            background: linear-gradient(135deg, #e8a88a, #c97a5a);
+            color: #fff;
+            border: none;
+            padding: 18px 50px;
+            font-size: 28px;
+            border-radius: 16px;
+            cursor: pointer;
             font-weight: 700;
+            transition: 0.3s;
+            min-width: 120px;
+        }
+        .btn-yes:hover { transform: scale(1.15); box-shadow: 0 8px 30px rgba(201, 122, 90, 0.4); }
+        .btn-no {
+            background: linear-gradient(135deg, #c8b8b0, #a89888);
+            color: #fff;
+            border: none;
+            padding: 18px 50px;
+            font-size: 28px;
+            border-radius: 16px;
+            cursor: pointer;
+            font-weight: 700;
+            transition: 0.1s;
+            min-width: 120px;
             position: relative;
         }
 
-        .final-page .love-text .highlight::after {
-            content: '';
-            position: absolute;
-            bottom: -2px;
-            left: 0;
-            width: 100%;
-            height: 3px;
-            background: linear-gradient(90deg, #c97a5a, transparent);
-            border-radius: 2px;
-        }
-
-        .final-page .love-text .highlight2 {
-            color: #b8957a;
-            font-weight: 700;
-        }
-
-        .final-page .signature {
-            font-size: 16px;
-            color: #b8a090;
-            margin-top: 25px;
-            font-style: italic;
-            letter-spacing: 1px;
-        }
-
-        .final-page .btn-restart {
-            background: linear-gradient(135deg, #e8b4a8 0%, #c97a5a 100%);
-            margin-top: 20px;
-        }
-
-        .final-page .btn-restart:hover {
-            box-shadow: 0 12px 30px rgba(201, 122, 90, 0.4);
-        }
-
-        .final-page .bottom-emojis {
-            font-size: 50px;
-            margin: 15px 0;
-        }
+        /* ── финал ── */
+        .final-page .big-hearts { font-size: 60px; margin: 8px 0; animation: pulseHearts 1.5s infinite; }
+        .final-page .birthday-title { font-size: 26px; color: #c97a5a; font-weight: 700; margin: 6px 0; }
+        .final-page .final-image img { max-width: 100%; max-height: 280px; border-radius: 16px; object-fit: cover; margin: 10px 0; box-shadow: 0 8px 30px rgba(139,69,19,0.15); }
+        .final-page .love-text { font-size: 20px; color: #4a3729; line-height: 1.8; margin: 14px 0; }
+        .final-page .love-text .hl { color: #c97a5a; font-weight: 700; }
+        .final-page .love-text .hl2 { color: #b8957a; font-weight: 700; }
 
         .confetti {
-            font-size: 45px;
             display: inline-block;
-            animation: confettiFall 2.5s ease-in-out infinite;
+            animation: confettiFall 2.5s infinite;
         }
-
         @keyframes confettiFall {
-            0%, 100% { transform: translateY(0) rotate(0deg) scale(1); }
+            0%,100% { transform: translateY(0) rotate(0deg) scale(1); }
             25% { transform: translateY(-12px) rotate(15deg) scale(1.1); }
             75% { transform: translateY(12px) rotate(-10deg) scale(0.9); }
         }
 
-        /* Адаптивность */
+        /* ── адаптив ── */
         @media (max-width: 480px) {
-            .container {
-                padding: 25px 20px;
-                border-radius: 18px;
-            }
-            .intro-page h1 {
-                font-size: 28px;
-            }
-            .intro-page .intro-text {
-                font-size: 18px;
-            }
-            .intro-page .btn-start {
-                font-size: 18px;
-                padding: 16px 30px;
-            }
-            .question-text {
-                font-size: 20px;
-                min-height: 60px;
-            }
-            .question-text::before {
-                display: none;
-            }
-            input[type="number"] {
-                font-size: 18px;
-                padding: 14px 15px;
-            }
-            .btn {
-                padding: 14px 30px;
-                font-size: 16px;
-            }
-            .final-page h1 {
-                font-size: 26px;
-            }
-            .final-page .birthday-title {
-                font-size: 22px;
-            }
-            .final-page .love-text {
-                font-size: 19px;
-            }
-            .final-page .big-hearts {
-                font-size: 50px;
-            }
-            .success-page .image-container img {
-                max-height: 200px;
-            }
-            .final-page .final-image img {
-                max-height: 220px;
-            }
-            .confetti {
-                font-size: 35px;
-            }
-            .final-page .bottom-emojis {
-                font-size: 40px;
-            }
+            .container { padding: 20px 14px; }
+            .q-text { font-size: 19px; min-height: 50px; }
+            .emoji-display { font-size: 44px; }
+            .big-heart { font-size: 80px; }
+            .memory-grid { gap: 6px; }
+            .heart-grid { gap: 4px; }
+            .heart-cell { font-size: 20px; }
+            .word-chip { font-size: 15px; padding: 6px 12px; }
+            .btn-yes, .btn-no { padding: 14px 30px; font-size: 22px; min-width: 90px; }
+            .final-page .big-hearts { font-size: 40px; }
         }
-
         @media (max-width: 380px) {
-            .container {
-                padding: 18px 14px;
-            }
-            .question-text {
-                font-size: 17px;
-                min-height: 50px;
-            }
-            .btn {
-                font-size: 14px;
-                padding: 12px 20px;
-            }
+            .container { padding: 14px 10px; }
+            .q-text { font-size: 17px; }
+            .heart-grid { grid-template-columns: repeat(6, 1fr); }
         }
     </style>
 </head>
 <body>
-    <div class="container" id="app">
-        <!-- Вступление -->
-        <div class="intro-page" id="introPage">
-            <h1>Привет, Вика! 👋</h1>
-            <div class="intro-text">
-                Я подготовил для тебя сюрприз.
-            </div>
-            <button class="btn-start" id="startBtn">Начать ❤️</button>
-            <div class="hearts" style="margin-top: 20px;">❤️</div>
-        </div>
 
-        <!-- Страница с вопросом -->
-        <div class="question-page" id="questionPage">
-            <div class="question-number" id="questionNumber">Вопрос 1 из 9</div>
-            <div class="question-text" id="questionText">Загрузка вопроса...</div>
-            <div class="input-group">
-                <input type="number" id="answerInput" placeholder="Введи свой ответ..." autofocus>
-            </div>
-            <button class="btn" id="submitBtn">Ответить ❤️</button>
-            <div class="message" id="message"></div>
-            <div class="progress-bar">
-                <div class="progress-fill" id="progressFill"></div>
-            </div>
-            <div class="hearts">❤️</div>
-        </div>
+<div class="container" id="app">
 
-        <!-- Страница успеха -->
-        <div class="success-page" id="successPage">
-            <div class="question-number" id="successNumber">Вопрос 1 из 9</div>
-            <h2 style="color: #4a8a6a; margin-bottom: 10px; font-weight: 700;">✅ Правильно!</h2>
-            <div class="image-container" id="successImages"></div>
-            <div class="message-text" id="successMessage">Твой текст с картинками!</div>
-            <button class="btn btn-next" id="nextBtn">Дальше ➜</button>
-            <div class="hearts">❤️</div>
-        </div>
-
-        <!-- Финальный экран -->
-        <div class="final-page" id="finalPage">
-            <div class="big-hearts">
-                <span class="confetti">🎉</span>
-                <span>❤️</span>
-                <span class="confetti">🎊</span>
-                <span>💕</span>
-                <span class="confetti">✨</span>
-            </div>
-            
-            <h1>ТЫ ПРОШЛА ВСЕ ВОПРОСЫ! 🎉</h1>
-            <div class="birthday-title">🎂 С ДНЁМ РОЖДЕНИЯ, ВИКА! 🎂</div>
-
-            <div class="final-image">
-                <img src="images/photo9.jpg" alt="Наше фото" onerror="this.style.display='none'; this.parentNode.innerHTML='<p style=\'color:#b8a090;font-size:16px;\'>📸 Фото не загрузилось :(</p>'">
-            </div>
-            
-            <div class="love-text">
-                <p>Вика, ты — самое лучшее, что случилось в моей жизни ❤️</p>
-                <p>Спасибо тебе за каждый день, каждую улыбку,</p>
-                <p>за то, что ты есть у меня 💕</p>
-                <br>
-                <p>Ты — моя <span class="highlight">любовь</span>,</p>
-                <p>моё <span class="highlight2">вдохновение</span></p>
-                <p>и мой <span class="highlight">номер 1</span> навсегда! 💖</p>
-                <br>
-                <p style="font-size: 20px;">Я тебя очень сильно люблю! ❤️</p>
-                <br>
-                <p style="font-size: 18px; color: #c97a5a; font-weight: 600;">
-                    🥳 С днём рождения, моя лисичка!<br>
-                    Желаю тебе счастья, здоровья и чтобы<br>
-                    каждый день был таким же прекрасным, как ты! 💕
-                </p>
-            </div>
-            
-            <div class="bottom-emojis">🎁🎈🎂😘💕❤️</div>
-            
-            <button class="btn btn-restart" onclick="location.reload()">🔄 Пройти заново</button>
-            
-            <div class="signature">Сделано с любовью ❤️</div>
-        </div>
+    <!-- ===== ВСТУПЛЕНИЕ ===== -->
+    <div class="page active intro-page" id="introPage">
+        <h1>Привет, Вика! 👋</h1>
+        <div class="intro-text">Я подготовил для тебя сюрприз.</div>
+        <button class="btn" id="startBtn">Начать ❤️</button>
+        <div class="hearts-bottom" style="margin-top:18px;">❤️</div>
     </div>
 
-    <script>
-        // ===== ТВОИ ДАННЫЕ =====
-        const questions = [
-            {
-                question: "Я, Владик, Даша, ты. Какой ответ?",
-                answer: 21,
-                successText: "21! Именно столько лет тебе сегодня исполняется! Еще на год ближе к морщинам 😂",
-                images: ["images/photo10.jpg"]
-            },
-            {
-                question: "«Какого мозга? Ты здесь реально припарковался». Но где же ты могла сказать эти слова?",
-                answer: 1205,
-                successText: "12.05! Именно в этот день я подписал себе приговор терпеть твоё окружение, но зато в замен получил то, о чем я даже и не мечтал❤️. Ужас, сколько же это дней мы провели вместе?",
-                images: ["images/photo1.jpg"]
-            },
-            {
-                question: "Динозавры, день рождение, Цукер. Что же объединяет все эти слова?",
-                answer: 0,
-                successText: "0! Именно столько дней нам понадобилось, чтобы первый раз поебаться💕. Это всё потому что ты нимфоманка ебаная... по крайней мере была",
-                images: ["images/photo2.jpg"]
-            },
-            {
-                question: "Любишь же ты интересоваться чужой жизнью. Не правда ли?",
-                answer: 80,
-                successText: "80% совместимости по дате рождения выдал первый же сайт😍. Пиздец... Ну значит судьба. И кстати мы оба петухи",
-                images: ["images/photo3.jpg"]
-            },
-            {
-                question: "Я верю в тебя. Сможешь ли ты ответить на вопрос, не зная его?",
-                answer: 67,
-                successText: "67 67 67",
-                images: ["images/photo4.jpg"]
-            },
-            {
-                question: "Жду ответ. Ты же запомнила вопрос после первого ответа?",
-                answer: 452,
-                successText: "452! Именно столько дней мы с тобой вместе❤️. Это столько дней ты уже терпишь мои тупые шутки? Ёбнутая",
-                images: ["images/photo5.jpg"]
-            },
-            {
-                question: "Правила же созданы для того чтобы их нарушать. Верно же?",
-                answer: 0,
-                successText: "0! Именно столько дней мы с тобой прожили вместе без ссор💕. Таким результатом может похвастаться не каждая пара:)",
-                images: ["images/photo6.jpg"]
-            },
-            {
-                question: "Ты долго ждала этих слов, а я был глуп. О чём это я?",
-                answer: 933,
-                successText: "933! Именно столько раз мы написали друг другу заветные слова: «Я тебя люблю❤️». И на каждое такое сообщение найдётся: «Ты меня не любишь»",
-                images: ["images/photo7.jpg"]
-            },
-            {
-                question: "(√2025 - 45)^2026 + 1. Докажешь, что не тупая?",
-                answer: 1,
-                successText: "Ты у меня умница и ты мой номер 1 💕!",
-                images: ["images/photo8.jpg"]
+    <!-- ===== СТРАНИЦА ВОПРОСА ===== -->
+    <div class="page" id="questionPage">
+        <div class="q-number" id="qNumber">Вопрос 1 из 9</div>
+        <div class="q-text" id="qText">Загрузка...</div>
+        <div class="input-group">
+            <input class="q-input" id="qInput" type="number" placeholder="Введи свой ответ..." autofocus />
+        </div>
+        <button class="btn" id="submitBtn">Ответить ❤️</button>
+        <div class="message" id="qMessage"></div>
+        <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+        <div class="hearts-bottom">❤️</div>
+    </div>
+
+    <!-- ===== СТРАНИЦА УСПЕХА (ПОСЛЕ ПРАВИЛЬНОГО ОТВЕТА) ===== -->
+    <div class="page" id="successPage">
+        <div class="q-number" id="sNumber">Вопрос 1 из 9</div>
+        <h2 style="color:#4a8a6a; margin:6px 0 10px;">✅ Правильно!</h2>
+        <div id="sImages"></div>
+        <div class="q-text" id="sText" style="font-size:20px; min-height:40px;">Твой текст</div>
+        <button class="btn btn-next" id="nextToGameBtn">Игра 🎮</button>
+        <div class="hearts-bottom">❤️</div>
+    </div>
+
+    <!-- ===== СТРАНИЦА ИГРЫ (общая обёртка) ===== -->
+    <div class="page" id="gamePage">
+        <div class="q-number" id="gameNumber">Игра 1 из 9</div>
+        <div id="gameContent"></div>
+        <button class="btn btn-next" id="gameNextBtn" style="display:none;">Дальше ➜</button>
+        <div class="hearts-bottom">❤️</div>
+    </div>
+
+    <!-- ===== ФИНАЛ ===== -->
+    <div class="page final-page" id="finalPage">
+        <div class="big-hearts">
+            <span class="confetti">🎉</span> ❤️ <span class="confetti">🎊</span> 💕 <span class="confetti">✨</span>
+        </div>
+        <h1 style="font-size:30px; color:#4a3729;">ТЫ ПРОШЛА ВСЕ ВОПРОСЫ! 🎉</h1>
+        <div class="birthday-title">🎂 С ДНЁМ РОЖДЕНИЯ, ВИКА! 🎂</div>
+        <div class="final-image">
+            <img src="images/photo9.jpg" alt="Наше фото" onerror="this.style.display='none'; this.parentNode.innerHTML='<p style=color:#b8a090;>📸 Фото не загрузилось :(</p>'" />
+        </div>
+        <div class="love-text">
+            <p>Вика, ты — самое лучшее, что случилось в моей жизни ❤️</p>
+            <p>Спасибо тебе за каждый день, каждую улыбку,</p>
+            <p>за то, что ты есть у меня 💕</p>
+            <br />
+            <p>Ты — моя <span class="hl">любовь</span>,</p>
+            <p>моё <span class="hl2">вдохновение</span></p>
+            <p>и мой <span class="hl">номер 1</span> навсегда! 💖</p>
+            <br />
+            <p style="font-size:19px;">Я тебя очень сильно люблю! ❤️</p>
+            <br />
+            <p style="font-size:17px; color:#c97a5a; font-weight:600;">
+                🥳 С днём рождения, моя лисичка!<br />
+                Желаю тебе счастья, здоровья и чтобы<br />
+                каждый день был таким же прекрасным, как ты! 💕
+            </p>
+        </div>
+        <div style="font-size:42px; margin:10px 0;">🎁🎈🎂😘💕❤️</div>
+        <button class="btn" onclick="location.reload()" style="background:linear-gradient(135deg,#e8b4a8,#c97a5a);">🔄 Пройти заново</button>
+        <div class="hearts-bottom" style="margin-top:16px;">❤️</div>
+    </div>
+
+</div>
+
+<script>
+    // ============================================================
+    //  ДАННЫЕ
+    // ============================================================
+    const questions = [
+        {
+            q: 'Я, Владик, Даша, ты. Какой ответ?',
+            a: 21,
+            txt: '21! Именно столько лет тебе сегодня исполняется! Еще на год ближе к морщинам',
+            img: 'images/photo10.jpg'
+        }
+        {
+            q: '«Какого мозга? Ты здесь реально припарковался». Но где же ты могла сказать эти слова?',
+            a: 1205,
+            txt: '12.05! Именно в этот день я подписал себе приговор терпеть твоё окружение, но зато в замен получил то, о чем я даже и не мечтал❤️. Ужас, сколько же это дней мы провели вместе?',
+            img: 'images/photo1.jpg'
+        },
+        {
+            q: 'Динозавры, день рождение, Цукер. Что же объединяет все эти слова?',
+            a: 0,
+            txt: '0! Именно столько дней нам понадобилось, чтобы первый раз поебаться💕. Это всё потому что ты нимфоманка ебаная... по крайней мере была',
+            img: 'images/photo2.jpg'
+        },
+        {
+            q: 'Любишь же ты интересоваться чужой жизнью. Не правда ли?',
+            a: 80,
+            txt: '80% совместимости по дате рождения выдал первый же сайт😍. Пиздец... Ну значит судьба. И кстати мы оба петухи',
+            img: 'images/photo3.jpg'
+        },
+        {
+            q: 'Я верю в тебя. Сможешь ли ты ответить на вопрос, не зная его?',
+            a: 67,
+            txt: '67 67 67',
+            img: 'images/photo4.jpg'
+        },
+        {
+            q: 'Жду ответ. Ты же запомнила вопрос после первого ответа?',
+            a: 452,
+            txt: '452! Именно столько дней мы с тобой вместе❤️. Это столько дней ты уже терпишь мои тупые шутки? Ёбнутая',
+            img: 'images/photo5.jpg'
+        },
+        {
+            q: 'Правила же созданы для того чтобы их нарушать. Верно же?',
+            a: 0,
+            txt: '0! Именно столько дней мы с тобой прожили вместе без ссор💕. Таким результатом может похвастаться не каждая пара:)',
+            img: 'images/photo6.jpg'
+        },
+        {
+            q: 'Ты долго ждала этих слов, а я был глуп. О чём это я?',
+            a: 933,
+            txt: '933! Именно столько раз мы написали друг другу заветные слова: «Я тебя люблю❤️». И на каждое такое сообщение найдётся: «Ты меня не любишь»',
+            img: 'images/photo7.jpg'
+        },
+        {
+            q: '(√2025 - 45)^2026 + 1. Докажешь, что не тупая?',
+            a: 1,
+            txt: 'Ты у меня умница и ты мой номер 1 💕!',
+            img: 'images/photo8.jpg'
+        },
+    ];
+
+    // Игры: каждая функция рендерит контент в #gameContent и вызывает onGameComplete() при победе
+    const GAMES = [
+        // 1 — Угадай эмодзи (CS2)
+        game_emoji,
+        // 2 — Кликер-сердечко (большое сердце, 30 кликов)
+        game_bigHeart,
+        // 3 — Пазл 3x3 (ваше фото)
+        game_puzzle,
+        // 4 — Мемори 6 пар (фотки)
+        game_memory,
+        // 5 — Дорисуй сердечко
+        game_drawHeart,
+        // 6 — Собери фразу "Я тебя люблю" с кучей лишних слов
+        game_phrase,
+        // 7 — Найди целое сердечко среди разбитых
+        game_findHeart,
+        // 8 — Лабиринт 5x5
+        game_maze,
+        // 9 — Финальный вопрос (последняя игра — переход на финал)
+        game_finalQuestion
+    ];
+
+    // ============================================================
+    //  СОСТОЯНИЕ
+    // ============================================================
+    let currentQ = 0;              // индекс текущего вопроса (0..8)
+    let currentGame = -1;          // индекс текущей игры (-1 если ещё не начата)
+    let gameCompleted = false;     // флаг что игра пройдена
+
+    // элементы
+    const $ = id => document.getElementById(id);
+    const introPage = $('introPage');
+    const questionPage = $('questionPage');
+    const successPage = $('successPage');
+    const gamePage = $('gamePage');
+    const finalPage = $('finalPage');
+    const qNumber = $('qNumber');
+    const qText = $('qText');
+    const qInput = $('qInput');
+    const submitBtn = $('submitBtn');
+    const qMessage = $('qMessage');
+    const progressFill = $('progressFill');
+    const sNumber = $('sNumber');
+    const sText = $('sText');
+    const sImages = $('sImages');
+    const nextToGameBtn = $('nextToGameBtn');
+    const gameNumber = $('gameNumber');
+    const gameContent = $('gameContent');
+    const gameNextBtn = $('gameNextBtn');
+
+    // ============================================================
+    //  НАВИГАЦИЯ
+    // ============================================================
+    function showPage(page) {
+        document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+        page.classList.add('active');
+    }
+
+    function loadQuestion(index) {
+        const q = questions[index];
+        qNumber.textContent = `Вопрос ${index+1} из ${questions.length}`;
+        qText.textContent = q.q;
+        qInput.value = '';
+        qInput.type = 'number';
+        qInput.placeholder = 'Введи свой ответ...';
+        qInput.disabled = false;
+        qMessage.className = 'message';
+        qMessage.textContent = '';
+        submitBtn.disabled = false;
+        // прогресс
+        const pct = (index / questions.length) * 100;
+        progressFill.style.width = pct + '%';
+        showPage(questionPage);
+        setTimeout(() => qInput.focus(), 100);
+    }
+
+    function showSuccess(index) {
+        const q = questions[index];
+        sNumber.textContent = `Вопрос ${index+1} из ${questions.length}`;
+        sText.textContent = q.txt;
+        // картинка
+        sImages.innerHTML = '';
+        if (q.img) {
+            const img = document.createElement('img');
+            img.src = q.img;
+            img.alt = 'Наше фото';
+            img.style.maxWidth = '100%';
+            img.style.maxHeight = '220px';
+            img.style.borderRadius = '12px';
+            img.style.objectFit = 'cover';
+            img.style.margin = '6px 0 10px';
+            img.onerror = function() { this.style.display = 'none'; };
+            sImages.appendChild(img);
+        }
+        showPage(successPage);
+    }
+
+    // ============================================================
+    //  ЗАПУСК ИГРЫ
+    // ============================================================
+    function startGame(gameIndex) {
+        currentGame = gameIndex;
+        gameCompleted = false;
+        gameNextBtn.style.display = 'none';
+        gameNumber.textContent = `Игра ${gameIndex+1} из ${GAMES.length}`;
+        showPage(gamePage);
+        // вызываем функцию игры
+        GAMES[gameIndex](gameContent, () => {
+            gameCompleted = true;
+            gameNextBtn.style.display = 'block';
+        });
+    }
+
+    // Кнопка "Игра" на странице успеха
+    nextToGameBtn.addEventListener('click', function() {
+        const gameIdx = currentQ; // 0..8
+        if (gameIdx < GAMES.length) {
+            startGame(gameIdx);
+        } else {
+            // на всякий случай
+            showFinal();
+        }
+    });
+
+    // Кнопка "Дальше" после игры
+    gameNextBtn.addEventListener('click', function() {
+        if (!gameCompleted) return;
+        // переходим к следующему вопросу
+        currentQ++;
+        if (currentQ < questions.length) {
+            loadQuestion(currentQ);
+        } else {
+            showFinal();
+        }
+    });
+
+    // ============================================================
+    //  ОТВЕТ НА ВОПРОС
+    // ============================================================
+    submitBtn.addEventListener('click', function() {
+        const q = questions[currentQ];
+        const val = parseInt(qInput.value);
+        if (isNaN(val)) {
+            qMessage.className = 'message error';
+            qMessage.textContent = '❌ Введи число!';
+            return;
+        }
+        if (val === q.a) {
+            qMessage.className = 'message success';
+            qMessage.textContent = '🎉 Правильно!';
+            submitBtn.disabled = true;
+            qInput.disabled = true;
+            setTimeout(() => showSuccess(currentQ), 400);
+        } else {
+            qMessage.className = 'message error';
+            qMessage.textContent = '❌ Неправильно! Попробуй ещё раз...';
+            qInput.value = '';
+            qInput.focus();
+        }
+    });
+
+    qInput.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter') submitBtn.click();
+    });
+
+    // ============================================================
+    //  СТАРТ
+    // ============================================================
+    $('startBtn').addEventListener('click', function() {
+        currentQ = 0;
+        loadQuestion(0);
+    });
+
+    // ============================================================
+    //  ФИНАЛ
+    // ============================================================
+    function showFinal() {
+        showPage(finalPage);
+    }
+
+    // ============================================================
+    //  ИГРЫ (реализации)
+    // ============================================================
+
+    // ----- 1. Угадай эмодзи: CS2 -----
+    function game_emoji(container, onWin) {
+        container.innerHTML = `
+            <div class="emoji-display">🎮🔫💻</div>
+            <div class="game-hint">Напиши ответ:</div>
+            <input class="q-input" id="emojiInput" placeholder="Введи название..." style="max-width:200px;margin:0 auto;" />
+            <button class="btn" id="emojiBtn" style="margin-top:12px;">Проверить</button>
+            <div class="message" id="emojiMsg"></div>
+        `;
+        const input = container.querySelector('#emojiInput');
+        const btn = container.querySelector('#emojiBtn');
+        const msg = container.querySelector('#emojiMsg');
+        btn.addEventListener('click', function() {
+            const val = input.value.trim().toUpperCase();
+            if (val === 'CS2') {
+                msg.className = 'message success';
+                msg.textContent = '🎉 Ну а как без неё?';
+                input.disabled = true;
+                btn.disabled = true;
+                onWin();
+            } else {
+                msg.className = 'message error';
+                msg.textContent = '❌ Неправильно, попробуй ещё раз';
+                input.value = '';
+                input.focus();
             }
+        });
+        input.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter') btn.click();
+        });
+        setTimeout(() => input.focus(), 100);
+    }
+
+    // ----- 2. Кликер-сердечко (большое сердце, 30 кликов) -----
+    function game_bigHeart(container, onWin) {
+        let clicks = 0;
+        const target = 30;
+        container.innerHTML = `
+            <div style="font-size:20px;color:#4a3729;margin-bottom:4px;">Кликни по сердцу <span id="clickCount">0</span> / ${target}</div>
+            <div class="big-heart" id="bigHeart">❤️</div>
+            <div style="font-size:16px;color:#8a7a6a;" id="heartMsg">Кликай! ❤️</div>
+        `;
+        const heart = container.querySelector('#bigHeart');
+        const counter = container.querySelector('#clickCount');
+        const msg = container.querySelector('#heartMsg');
+        heart.addEventListener('click', function() {
+            clicks++;
+            counter.textContent = clicks;
+            // маленькая анимация
+            heart.style.transform = 'scale(0.85)';
+            setTimeout(() => heart.style.transform = 'scale(1)', 100);
+            if (clicks >= target) {
+                msg.textContent = '🎉 30 раз люблю тебя! ❤️';
+                heart.style.pointerEvents = 'none';
+                heart.style.opacity = '0.6';
+                onWin();
+            }
+        });
+    }
+
+    // ----- 3. Пазл 3x3 (ваше фото) -----
+    function game_puzzle(container, onWin) {
+        // используем photo3.jpg как основу для пазла (можно заменить)
+        const imgSrc = 'images/photo17.jpg';
+        container.innerHTML = `
+            <div style="font-size:16px;color:#6b5a4a;margin-bottom:6px;">Перетащи части на места</div>
+            <div class="puzzle-grid" id="puzzleGrid"></div>
+            <div id="puzzleStatus" style="font-size:16px;color:#8a7a6a;"></div>
+        `;
+        const grid = container.querySelector('#puzzleGrid');
+        const status = container.querySelector('#puzzleStatus');
+        const size = 3;
+        const total = size * size;
+        let pieces = [];
+        let placed = 0;
+
+        // создаём порядок
+        for (let i = 0; i < total; i++) pieces.push(i);
+        // перемешиваем
+        for (let i = pieces.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [pieces[i], pieces[j]] = [pieces[j], pieces[i]];
+        }
+
+        // строим сетку
+        function render() {
+            grid.innerHTML = '';
+            for (let i = 0; i < total; i++) {
+                const idx = pieces[i];
+                const div = document.createElement('div');
+                div.className = 'puzzle-piece';
+                if (idx === i) {
+                    div.classList.add('placed');
+                    div.style.backgroundImage = `url(${imgSrc})`;
+                    div.style.backgroundPosition = `${(i % size) * 33.33}% ${Math.floor(i / size) * 33.33}%`;
+                    div.style.borderColor = '#8a9a7a';
+                } else {
+                    div.style.background = '#e8ddd0';
+                    div.textContent = '?';
+                    div.style.display = 'flex';
+                    div.style.alignItems = 'center';
+                    div.style.justifyContent = 'center';
+                    div.style.fontSize = '24px';
+                    div.style.color = '#b8a898';
+                    div.draggable = false;
+                }
+                div.dataset.index = i;
+                div.dataset.value = idx;
+                grid.appendChild(div);
+            }
+            // проверка победы
+            let correct = 0;
+            for (let i = 0; i < total; i++) {
+                if (pieces[i] === i) correct++;
+            }
+            if (correct === total) {
+                status.textContent = '🎉 Пазл собран! Молодец! ❤️';
+                onWin();
+            } else {
+                status.textContent = `Собрано ${correct} из ${total}`;
+            }
+        }
+
+        // клик для обмена с соседней пустой? Упростим: клик на элемент меняет его с пустым (там где ?)
+        grid.addEventListener('click', function(e) {
+            const el = e.target.closest('.puzzle-piece');
+            if (!el) return;
+            if (el.classList.contains('placed')) return;
+            const idx = parseInt(el.dataset.index);
+            // ищем пустую (где значение === индексу)
+            let emptyIdx = -1;
+            for (let i = 0; i < total; i++) {
+                if (pieces[i] === i) { emptyIdx = i; break; }
+            }
+            if (emptyIdx === -1) return;
+            // меняем
+            [pieces[idx], pieces[emptyIdx]] = [pieces[emptyIdx], pieces[idx]];
+            render();
+        });
+
+        render();
+    }
+
+    // ----- 4. Мемори 6 пар (фотки) -----
+    function game_memory(container, onWin) {
+        // используем 6 разных фото (photo1..photo6)
+        const images = [
+            'images/photo11.jpg',
+            'images/photo12.jpg',
+            'images/photo13.jpg',
+            'images/photo14.jpg',
+            'images/photo15.jpg',
+            'images/photo16.jpg'
         ];
-        // ===== КОНЕЦ ТВОИХ ДАННЫХ =====
-
-        let currentQuestion = 0;
-        const totalQuestions = questions.length;
-
-        const introPage = document.getElementById('introPage');
-        const questionPage = document.getElementById('questionPage');
-        const successPage = document.getElementById('successPage');
-        const finalPage = document.getElementById('finalPage');
-        const startBtn = document.getElementById('startBtn');
-        const questionNumber = document.getElementById('questionNumber');
-        const questionText = document.getElementById('questionText');
-        const answerInput = document.getElementById('answerInput');
-        const submitBtn = document.getElementById('submitBtn');
-        const message = document.getElementById('message');
-        const progressFill = document.getElementById('progressFill');
-        const successNumber = document.getElementById('successNumber');
-        const successMessage = document.getElementById('successMessage');
-        const successImages = document.getElementById('successImages');
-        const nextBtn = document.getElementById('nextBtn');
-
-        function loadQuestion(index) {
-            const q = questions[index];
-            questionNumber.textContent = `Вопрос ${index + 1} из ${totalQuestions}`;
-            questionText.textContent = q.question;
-            answerInput.value = '';
-            answerInput.focus();
-            message.className = 'message';
-            message.textContent = '';
-            submitBtn.disabled = false;
-            answerInput.disabled = false;
-            updateProgress();
-            
-            questionPage.classList.add('active');
-            questionPage.classList.remove('hidden');
-            successPage.classList.remove('active');
-            finalPage.classList.remove('active');
+        const pairs = 6;
+        const totalCards = pairs * 2;
+        let cards = [];
+        for (let i = 0; i < pairs; i++) {
+            cards.push(i, i);
+        }
+        // перемешиваем
+        for (let i = cards.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [cards[i], cards[j]] = [cards[j], cards[i]];
         }
 
-        function updateProgress() {
-            const percent = ((currentQuestion) / totalQuestions) * 100;
-            progressFill.style.width = percent + '%';
+        let flipped = [];
+        let matched = 0;
+        let lock = false;
+
+        container.innerHTML = `
+            <div style="font-size:16px;color:#6b5a4a;margin-bottom:6px;">Найди пары одинаковых фото</div>
+            <div class="memory-grid" id="memoryGrid"></div>
+            <div id="memoryStatus" style="font-size:16px;color:#8a7a6a;">Найдено пар: 0 / ${pairs}</div>
+        `;
+        const grid = container.querySelector('#memoryGrid');
+        const status = container.querySelector('#memoryStatus');
+
+        function render() {
+            grid.innerHTML = '';
+            cards.forEach((val, idx) => {
+                const div = document.createElement('div');
+                div.className = 'memory-card';
+                div.dataset.idx = idx;
+                div.dataset.val = val;
+                if (val === -1) {
+                    div.classList.add('matched');
+                    div.textContent = '✅';
+                } else {
+                    div.textContent = '❓';
+                }
+                grid.appendChild(div);
+            });
         }
 
-        function showSuccess(index) {
-            const q = questions[index];
-            successNumber.textContent = `Вопрос ${index + 1} из ${totalQuestions}`;
-            successMessage.textContent = q.successText;
-            
-            successImages.innerHTML = '';
-            if (q.images && q.images.length > 0) {
-                q.images.forEach(src => {
-                    const img = document.createElement('img');
-                    img.src = src;
-                    img.alt = 'Наше фото';
-                    img.onerror = function() {
-                        this.style.display = 'none';
-                        const fallback = document.createElement('p');
-                        fallback.textContent = '📸 Фото не загрузилось :(';
-                        fallback.style.color = '#b8a090';
-                        fallback.style.fontSize = '16px';
-                        this.parentNode.appendChild(fallback);
-                    };
-                    successImages.appendChild(img);
-                });
-            }
-
-            if (index === totalQuestions - 1) {
-                nextBtn.textContent = '🎉 Смотреть финал!';
+        function checkMatch() {
+            const [a, b] = flipped;
+            if (cards[a] === cards[b]) {
+                // пара
+                cards[a] = -1;
+                cards[b] = -1;
+                matched++;
+                status.textContent = `Найдено пар: ${matched} / ${pairs}`;
+                flipped = [];
+                render();
+                if (matched === pairs) {
+                    status.textContent = '🎉 Возможно Вадим был лишний) ❤️';
+                    onWin();
+                }
             } else {
-                nextBtn.textContent = 'Дальше ➜';
-            }
-
-            questionPage.classList.remove('active');
-            questionPage.classList.add('hidden');
-            successPage.classList.add('active');
-            finalPage.classList.remove('active');
-        }
-
-        // Кнопка "Начать"
-        startBtn.addEventListener('click', function() {
-            introPage.classList.add('hidden');
-            questionPage.classList.add('active');
-            questionPage.classList.remove('hidden');
-            loadQuestion(0);
-        });
-
-        submitBtn.addEventListener('click', function() {
-            const q = questions[currentQuestion];
-            const userAnswer = parseInt(answerInput.value);
-            
-            if (isNaN(userAnswer)) {
-                message.className = 'message error';
-                message.textContent = '❌ Введи число!';
-                return;
-            }
-
-            if (userAnswer === q.answer) {
-                message.className = 'message success';
-                message.textContent = '🎉 Правильно!';
-                submitBtn.disabled = true;
-                answerInput.disabled = true;
-                
+                // не пара
                 setTimeout(() => {
-                    showSuccess(currentQuestion);
+                    flipped = [];
+                    render();
                 }, 500);
+            }
+            lock = false;
+        }
+
+        grid.addEventListener('click', function(e) {
+            const el = e.target.closest('.memory-card');
+            if (!el) return;
+            if (lock) return;
+            const idx = parseInt(el.dataset.idx);
+            if (cards[idx] === -1) return;
+            if (flipped.includes(idx)) return;
+            if (flipped.length >= 2) return;
+
+            flipped.push(idx);
+            // показываем картинку
+            const val = cards[idx];
+            if (val >= 0 && val < images.length) {
+                const img = document.createElement('img');
+                img.src = images[val];
+                img.style.width = '100%';
+                img.style.height = '100%';
+                img.style.objectFit = 'cover';
+                img.style.borderRadius = '10px';
+                el.textContent = '';
+                el.appendChild(img);
             } else {
-                message.className = 'message error';
-                message.textContent = '❌ Неправильно! Попробуй ещё раз...';
-                answerInput.value = '';
-                answerInput.focus();
+                el.textContent = '❓';
+            }
+            el.classList.add('flipped');
+
+            if (flipped.length === 2) {
+                lock = true;
+                setTimeout(checkMatch, 400);
             }
         });
 
-        answerInput.addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') {
-                submitBtn.click();
+        render();
+    }
+
+    // ----- 5. Дорисуй сердечко -----
+    function game_drawHeart(container, onWin) {
+        container.innerHTML = `
+            <div style="font-size:16px;color:#6b5a4a;margin-bottom:6px;">Проведи по пунктиру, чтобы нарисовать сердечко ❤️</div>
+            <div class="draw-canvas-wrap">
+                <canvas id="drawCanvas" width="400" height="400"></canvas>
+            </div>
+            <div id="drawStatus" style="font-size:16px;color:#8a7a6a;"></div>
+        `;
+        const canvas = container.querySelector('#drawCanvas');
+        const ctx = canvas.getContext('2d');
+        const status = container.querySelector('#drawStatus');
+
+        const W = 400, H = 400;
+        let progress = 0;
+        const totalSteps = 80;
+
+        // рисование пунктирного сердца
+        function drawDashedHeart() {
+            ctx.clearRect(0, 0, W, H);
+            ctx.strokeStyle = '#d4a88a';
+            ctx.lineWidth = 4;
+            ctx.setLineDash([6, 8]);
+            ctx.beginPath();
+            const cx = 200, cy = 200, size = 100;
+            // параметрическое сердце
+            for (let t = 0; t <= Math.PI * 2; t += 0.02) {
+                const x = 16 * Math.pow(Math.sin(t), 3);
+                const y = 13 * Math.cos(t) - 5 * Math.cos(2*t) - 2 * Math.cos(3*t) - Math.cos(4*t);
+                const px = cx + x * 4.5;
+                const py = cy - y * 4.5;
+                if (t === 0) ctx.moveTo(px, py);
+                else ctx.lineTo(px, py);
+            }
+            ctx.closePath();
+            ctx.stroke();
+            ctx.setLineDash([]);
+
+            // рисуем старт и финиш
+            ctx.fillStyle = '#c97a5a';
+            ctx.font = '18px sans-serif';
+            ctx.fillText('❤️', 190, 70);
+            ctx.fillText('🏆', 250, 350);
+        }
+
+        let isDrawing = false;
+        let lastX = 0, lastY = 0;
+        let drawnPoints = [];
+
+        function isOnHeart(x, y) {
+            // проверка расстояния до контура сердца (приблизительно)
+            const cx = 200, cy = 200;
+            const dx = (x - cx) / 4.5;
+            const dy = (y - cy) / 4.5;
+            // параметрическое уравнение сердца: x = 16 sin³t, y = 13cos t - 5cos2t - 2cos3t - cos4t
+            // будем искать минимальное расстояние до кривой
+            let minDist = Infinity;
+            for (let t = 0; t <= Math.PI * 2; t += 0.02) {
+                const hx = 16 * Math.pow(Math.sin(t), 3);
+                const hy = 13 * Math.cos(t) - 5 * Math.cos(2*t) - 2 * Math.cos(3*t) - Math.cos(4*t);
+                const d = Math.sqrt((dx - hx) ** 2 + (dy - hy) ** 2);
+                if (d < minDist) minDist = d;
+            }
+            return minDist < 2.5;
+        }
+
+        function getMousePos(e) {
+            const rect = canvas.getBoundingClientRect();
+            const scaleX = canvas.width / rect.width;
+            const scaleY = canvas.height / rect.height;
+            const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+            const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+            return {
+                x: (clientX - rect.left) * scaleX,
+                y: (clientY - rect.top) * scaleY
+            };
+        }
+
+        function startDraw(e) {
+            e.preventDefault();
+            const pos = getMousePos(e);
+            if (isOnHeart(pos.x, pos.y)) {
+                isDrawing = true;
+                lastX = pos.x;
+                lastY = pos.y;
+                drawnPoints = [{x: pos.x, y: pos.y}];
+                ctx.beginPath();
+                ctx.moveTo(pos.x, pos.y);
+                ctx.strokeStyle = '#c97a5a';
+                ctx.lineWidth = 6;
+                ctx.lineCap = 'round';
+                ctx.lineJoin = 'round';
+            }
+        }
+
+        function draw(e) {
+            e.preventDefault();
+            if (!isDrawing) return;
+            const pos = getMousePos(e);
+            if (isOnHeart(pos.x, pos.y)) {
+                ctx.lineTo(pos.x, pos.y);
+                ctx.stroke();
+                drawnPoints.push({x: pos.x, y: pos.y});
+                lastX = pos.x;
+                lastY = pos.y;
+                // прогресс
+                progress = Math.min(1, drawnPoints.length / totalSteps);
+                if (progress >= 0.9) {
+                    status.textContent = '🎉 Почти готово! Дорисуй чуть-чуть...';
+                }
+            } else {
+                // если вышли за линию - сброс
+                ctx.strokeStyle = '#e8b4a8';
+                ctx.lineWidth = 3;
+                ctx.beginPath();
+                ctx.moveTo(lastX, lastY);
+                ctx.lineTo(pos.x, pos.y);
+                ctx.stroke();
+                ctx.strokeStyle = '#c97a5a';
+                ctx.lineWidth = 6;
+                // но не сбрасываем полностью, а просто рисуем красным
+            }
+        }
+
+        function endDraw(e) {
+            e.preventDefault();
+            if (isDrawing) {
+                isDrawing = false;
+                if (progress >= 0.85) {
+                    status.textContent = '🎉 Сердечко нарисовано! Ты умничка! ❤️';
+                    onWin();
+                } else {
+                    status.textContent = '😅 Почти получилось! Попробуй ещё раз';
+                    // даём возможность попробовать снова
+                    setTimeout(() => {
+                        progress = 0;
+                        drawnPoints = [];
+                        drawDashedHeart();
+                        status.textContent = 'Попробуй ещё раз! ❤️';
+                    }, 800);
+                }
+            }
+        }
+
+        drawDashedHeart();
+
+        canvas.addEventListener('mousedown', startDraw);
+        canvas.addEventListener('mousemove', draw);
+        canvas.addEventListener('mouseup', endDraw);
+        canvas.addEventListener('mouseleave', endDraw);
+        canvas.addEventListener('touchstart', startDraw);
+        canvas.addEventListener('touchmove', draw);
+        canvas.addEventListener('touchend', endDraw);
+    }
+
+    // ----- 6. Собери фразу "Я тебя люблю" с лишними словами -----
+    function game_phrase(container, onWin) {
+        const correct = ['я', 'тебя', 'люблю'];
+        const extra = ['кот', 'мир', 'солнце', 'ты', 'море', 'небо', 'счастье', 'звезда', 'вечность', 'сердце', 'жизнь', 'радость', 'дом', 'свет', 'огонь'];
+        // перемешиваем все
+        let pool = [...correct, ...extra];
+        for (let i = pool.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [pool[i], pool[j]] = [pool[j], pool[i]];
+        }
+
+        let selected = [];
+
+        container.innerHTML = `
+            <div style="font-size:16px;color:#6b5a4a;margin-bottom:6px;">Собери фразу: кликай на слова по порядку</div>
+            <div class="word-pool" id="wordPool"></div>
+            <div style="font-size:18px;color:#4a3729;margin:6px 0;min-height:32px;" id="phraseResult"></div>
+            <button class="btn" id="phraseCheckBtn" style="margin-top:8px;">Проверить</button>
+            <div class="message" id="phraseMsg"></div>
+        `;
+        const poolEl = container.querySelector('#wordPool');
+        const resultEl = container.querySelector('#phraseResult');
+        const checkBtn = container.querySelector('#phraseCheckBtn');
+        const msg = container.querySelector('#phraseMsg');
+
+        function renderPool() {
+            poolEl.innerHTML = '';
+            pool.forEach((word, idx) => {
+                const span = document.createElement('span');
+                span.className = 'word-chip';
+                span.textContent = word;
+                span.dataset.idx = idx;
+                span.dataset.word = word;
+                poolEl.appendChild(span);
+            });
+            // обновляем результат
+            resultEl.textContent = selected.join(' ');
+        }
+
+        poolEl.addEventListener('click', function(e) {
+            const el = e.target.closest('.word-chip');
+            if (!el) return;
+            if (el.classList.contains('used')) return;
+            const word = el.dataset.word;
+            selected.push(word);
+            el.classList.add('used');
+            resultEl.textContent = selected.join(' ');
+            // проверяем, не собрано ли уже
+            if (selected.length === correct.length) {
+                // можно проверить автоматически
+                checkPhrase();
             }
         });
 
-        nextBtn.addEventListener('click', function() {
-            currentQuestion++;
-            if (currentQuestion < totalQuestions) {
-                loadQuestion(currentQuestion);
+        function checkPhrase() {
+            const user = selected.join(' ').toLowerCase();
+            const target = correct.join(' ').toLowerCase();
+            if (user === target) {
+                msg.className = 'message success';
+                msg.textContent = '🎉 Правильно! "Я тебя люблю" ❤️';
+                checkBtn.disabled = true;
+                onWin();
             } else {
-                questionPage.classList.remove('active');
-                questionPage.classList.add('hidden');
-                successPage.classList.remove('active');
-                finalPage.classList.add('active');
+                msg.className = 'message error';
+                msg.textContent = '❌ Не та фраза, попробуй ещё раз!';
+                // сброс
+                selected = [];
+                pool.forEach(el => el.classList.remove('used'));
+                renderPool();
+                setTimeout(() => { msg.className = 'message'; msg.textContent = ''; }, 1500);
+            }
+        }
+
+        checkBtn.addEventListener('click', checkPhrase);
+        renderPool();
+    }
+
+    // ----- 7. Найди целое сердечко среди разбитых -----
+    function game_findHeart(container, onWin) {
+        const rows = 6, cols = 6;
+        const total = rows * cols;
+        const heartPos = Math.floor(Math.random() * total);
+
+        container.innerHTML = `
+            <div style="font-size:16px;color:#6b5a4a;margin-bottom:6px;">Найди целое сердечко ❤️ среди разбитых 💔</div>
+            <div class="heart-grid" id="heartGrid" style="grid-template-columns: repeat(${cols}, 1fr);"></div>
+            <div id="heartStatus" style="font-size:16px;color:#8a7a6a;"></div>
+        `;
+        const grid = container.querySelector('#heartGrid');
+        const status = container.querySelector('#heartStatus');
+
+        for (let i = 0; i < total; i++) {
+            const div = document.createElement('div');
+            div.className = 'heart-cell';
+            div.textContent = i === heartPos ? '❤️' : '💔';
+            div.dataset.idx = i;
+            div.dataset.isHeart = i === heartPos ? 'true' : 'false';
+            grid.appendChild(div);
+        }
+
+        grid.addEventListener('click', function(e) {
+            const el = e.target.closest('.heart-cell');
+            if (!el) return;
+            if (el.classList.contains('found')) return;
+            if (el.dataset.isHeart === 'true') {
+                el.classList.add('found');
+                status.textContent = '🎉 Нашла! Это оно! ❤️';
+                onWin();
+            } else {
+                el.style.background = 'rgba(200,180,170,0.5)';
+                el.style.pointerEvents = 'none';
+                status.textContent = '💔 Это разбитое... Ищи дальше!';
+                setTimeout(() => {
+                    el.style.background = '';
+                    el.style.pointerEvents = 'auto';
+                    status.textContent = '';
+                }, 500);
             }
         });
-    </script>
+    }
+
+    // ----- 8. Лабиринт 5x5 -----
+    function game_maze(container, onWin) {
+        container.innerHTML = `
+            <div style="font-size:16px;color:#6b5a4a;margin-bottom:6px;">Проведи от ❤️ до 🏆, не касаясь стен</div>
+            <div class="maze-wrap">
+                <canvas id="mazeCanvas" width="400" height="400"></canvas>
+            </div>
+            <div id="mazeStatus" style="font-size:16px;color:#8a7a6a;"></div>
+        `;
+        const canvas = container.querySelector('#mazeCanvas');
+        const ctx = canvas.getContext('2d');
+        const status = container.querySelector('#mazeStatus');
+
+        const W = 400, H = 400;
+        const cols = 5, rows = 5;
+        const cellSize = W / cols;
+
+        // простой лабиринт (стены между ячейками)
+        // 0 = проход, 1 = стена
+        // вертикальные стены: wallsV[r][c] (r=0..rows-1, c=0..cols-2)
+        // горизонтальные стены: wallsH[r][c] (r=0..rows-2, c=0..cols-1)
+        let wallsV = [];
+        let wallsH = [];
+        for (let r = 0; r < rows; r++) {
+            wallsV[r] = [];
+            for (let c = 0; c < cols - 1; c++) wallsV[r][c] = 1;
+        }
+        for (let r = 0; r < rows - 1; r++) {
+            wallsH[r] = [];
+            for (let c = 0; c < cols; c++) wallsH[r][c] = 1;
+        }
+
+        // генерируем случайный лабиринт (алгоритм DFS)
+        function generateMaze() {
+            const visited = Array.from({length: rows}, () => Array(cols).fill(false));
+            const stack = [];
+            const startR = 0, startC = 0;
+            visited[startR][startC] = true;
+            stack.push([startR, startC]);
+
+            while (stack.length > 0) {
+                const [r, c] = stack[stack.length - 1];
+                const neighbors = [];
+                if (r > 0 && !visited[r-1][c]) neighbors.push([r-1, c, 'up']);
+                if (r < rows-1 && !visited[r+1][c]) neighbors.push([r+1, c, 'down']);
+                if (c > 0 && !visited[r][c-1]) neighbors.push([r, c-1, 'left']);
+                if (c < cols-1 && !visited[r][c+1]) neighbors.push([r, c+1, 'right']);
+
+                if (neighbors.length === 0) {
+                    stack.pop();
+                } else {
+                    const [nr, nc, dir] = neighbors[Math.floor(Math.random() * neighbors.length)];
+                    visited[nr][nc] = true;
+                    // убираем стену
+                    if (dir === 'up') { wallsH[nr][c] = 0; }
+                    else if (dir === 'down') { wallsH[r][c] = 0; }
+                    else if (dir === 'left') { wallsV[r][nc] = 0; }
+                    else if (dir === 'right') { wallsV[r][c] = 0; }
+                    stack.push([nr, nc]);
+                }
+            }
+        }
+        generateMaze();
+
+        // рисуем лабиринт
+        function drawMaze() {
+            ctx.clearRect(0, 0, W, H);
+            ctx.fillStyle = '#faf5f0';
+            ctx.fillRect(0, 0, W, H);
+
+            // рисуем стены
+            ctx.strokeStyle = '#4a3729';
+            ctx.lineWidth = 3;
+
+            // вертикальные стены
+            for (let r = 0; r < rows; r++) {
+                for (let c = 0; c < cols - 1; c++) {
+                    if (wallsV[r][c] === 1) {
+                        ctx.beginPath();
+                        ctx.moveTo((c+1) * cellSize, r * cellSize);
+                        ctx.lineTo((c+1) * cellSize, (r+1) * cellSize);
+                        ctx.stroke();
+                    }
+                }
+            }
+            // горизонтальные стены
+            for (let r = 0; r < rows - 1; r++) {
+                for (let c = 0; c < cols; c++) {
+                    if (wallsH[r][c] === 1) {
+                        ctx.beginPath();
+                        ctx.moveTo(c * cellSize, (r+1) * cellSize);
+                        ctx.lineTo((c+1) * cellSize, (r+1) * cellSize);
+                        ctx.stroke();
+                    }
+                }
+            }
+
+            // внешние стены
+            ctx.strokeRect(0, 0, W, H);
+
+            // старт и финиш
+            ctx.font = '28px sans-serif';
+            ctx.fillStyle = '#c97a5a';
+            ctx.fillText('❤️', 6, 36);
+            ctx.fillStyle = '#d4a88a';
+            ctx.fillText('🏆', (cols-1)*cellSize + 6, (rows-1)*cellSize + 36);
+        }
+
+        drawMaze();
+
+        // логика прохождения
+        let posX = 0.5, posY = 0.5;
+        let isDragging = false;
+
+        function getCell(x, y) {
+            const c = Math.floor(x / cellSize);
+            const r = Math.floor(y / cellSize);
+            return {r, c};
+        }
+
+        function canMoveTo(x, y) {
+            const c = x / cellSize;
+            const r = y / cellSize;
+            // проверка границ
+            if (x < 0 || x > W || y < 0 || y > H) return false;
+            const col = Math.floor(c);
+            const row = Math.floor(r);
+            if (col < 0 || col >= cols || row < 0 || row >= rows) return false;
+            // проверка стен
+            const offsetX = c - col;
+            const offsetY = r - row;
+            // вертикальная стена
+            if (offsetX > 0.7 && col < cols - 1 && wallsV[row][col] === 1) return false;
+            if (offsetX < 0.3 && col > 0 && wallsV[row][col-1] === 1) return false;
+            // горизонтальная стена
+            if (offsetY > 0.7 && row < rows - 1 && wallsH[row][col] === 1) return false;
+            if (offsetY < 0.3 && row > 0 && wallsH[row-1][col] === 1) return false;
+            return true;
+        }
+
+        function drawPlayer(x, y) {
+            drawMaze();
+            ctx.beginPath();
+            ctx.arc(x, y, 12, 0, Math.PI * 2);
+            ctx.fillStyle = '#c97a5a';
+            ctx.fill();
+            ctx.strokeStyle = '#fff';
+            ctx.lineWidth = 2;
+            ctx.stroke();
+        }
+
+        function updatePos(x, y) {
+            if (canMoveTo(x, y)) {
+                posX = Math.max(6, Math.min(W-6, x));
+                posY = Math.max(6, Math.min(H-6, y));
+                drawPlayer(posX, posY);
+                // проверка финиша
+                const endX = (cols-1) * cellSize + cellSize/2;
+                const endY = (rows-1) * cellSize + cellSize/2;
+                if (Math.abs(posX - endX) < 20 && Math.abs(posY - endY) < 20) {
+                    status.textContent = '🎉 Ты прошла лабиринт! Молодец! ❤️';
+                    canvas.style.pointerEvents = 'none';
+                    onWin();
+                }
+            }
+        }
+
+        function handleMove(e) {
+            if (!isDragging) return;
+            e.preventDefault();
+            const rect = canvas.getBoundingClientRect();
+            const scaleX = canvas.width / rect.width;
+            const scaleY = canvas.height / rect.height;
+            const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+            const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+            const x = (clientX - rect.left) * scaleX;
+            const y = (clientY - rect.top) * scaleY;
+            updatePos(x, y);
+        }
+
+        canvas.addEventListener('mousedown', function(e) {
+            const rect = canvas.getBoundingClientRect();
+            const scaleX = canvas.width / rect.width;
+            const scaleY = canvas.height / rect.height;
+            const x = (e.clientX - rect.left) * scaleX;
+            const y = (e.clientY - rect.top) * scaleY;
+            if (canMoveTo(x, y)) {
+                isDragging = true;
+                updatePos(x, y);
+            }
+        });
+        canvas.addEventListener('mousemove', handleMove);
+        canvas.addEventListener('mouseup', function(e) { isDragging = false; });
+        canvas.addEventListener('mouseleave', function(e) { isDragging = false; });
+
+        canvas.addEventListener('touchstart', function(e) {
+            e.preventDefault();
+            const rect = canvas.getBoundingClientRect();
+            const scaleX = canvas.width / rect.width;
+            const scaleY = canvas.height / rect.height;
+            const touch = e.touches[0];
+            const x = (touch.clientX - rect.left) * scaleX;
+            const y = (touch.clientY - rect.top) * scaleY;
+            if (canMoveTo(x, y)) {
+                isDragging = true;
+                updatePos(x, y);
+            }
+        });
+        canvas.addEventListener('touchmove', handleMove);
+        canvas.addEventListener('touchend', function(e) { isDragging = false; });
+
+        // начальная позиция
+        drawPlayer(6, 6);
+    }
+
+    // ----- 9. Финальный вопрос -----
+    function game_finalQuestion(container, onWin) {
+        // Здесь onWin вызовется после нажатия "Да" на финальный вопрос
+        container.innerHTML = `
+            <div style="font-size:20px;color:#4a3729;margin:16px 0;">
+                Остался последний вопрос, ты готова?
+            </div>
+            <button class="btn" id="readyBtn" style="max-width:200px;margin:0 auto;">Да 💖</button>
+            <div id="finalQContent" style="display:none;margin-top:16px;">
+                <div style="font-size:24px;color:#4a3729;font-weight:700;margin-bottom:14px;">
+                    Ты меня любишь?
+                </div>
+                <div class="final-question-buttons">
+                    <button class="btn-yes" id="yesBtn">ДА ❤️</button>
+                    <button class="btn-no" id="noBtn">НЕТ</button>
+                </div>
+                <div id="finalQMsg" style="font-size:18px;color:#8a7a6a;margin-top:8px;"></div>
+            </div>
+        `;
+
+        const readyBtn = container.querySelector('#readyBtn');
+        const finalContent = container.querySelector('#finalQContent');
+        const yesBtn = container.querySelector('#yesBtn');
+        const noBtn = container.querySelector('#noBtn');
+        const finalMsg = container.querySelector('#finalQMsg');
+
+        readyBtn.addEventListener('click', function() {
+            readyBtn.style.display = 'none';
+            finalContent.style.display = 'block';
+        });
+
+        // кнопка "НЕТ" убегает
+        let noX = 0, noY = 0;
+        noBtn.addEventListener('mouseover', function(e) {
+            const rect = noBtn.getBoundingClientRect();
+            const parentRect = noBtn.parentElement.getBoundingClientRect();
+            let newX = Math.random() * (parentRect.width - rect.width);
+            let newY = Math.random() * (parentRect.height - rect.height);
+            noBtn.style.position = 'absolute';
+            noBtn.style.left = newX + 'px';
+            noBtn.style.top = newY + 'px';
+        });
+
+        yesBtn.addEventListener('click', function() {
+            finalMsg.textContent = '❤️ Я тебя тоже очень люблю! С днём рождения, моя родная! ❤️';
+            yesBtn.style.transform = 'scale(1.2)';
+            noBtn.style.display = 'none';
+            // победа!
+            setTimeout(onWin, 500);
+        });
+
+        // для мобильных: если нет hover, клик по "НЕТ" тоже двигает
+        noBtn.addEventListener('click', function(e) {
+            const rect = noBtn.getBoundingClientRect();
+            const parentRect = noBtn.parentElement.getBoundingClientRect();
+            let newX = Math.random() * (parentRect.width - rect.width);
+            let newY = Math.random() * (parentRect.height - rect.height);
+            noBtn.style.position = 'absolute';
+            noBtn.style.left = newX + 'px';
+            noBtn.style.top = newY + 'px';
+        });
+    }
+
+</script>
 </body>
 </html>
