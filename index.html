@@ -304,8 +304,8 @@
         .heart-grid {
             display: grid;
             grid-template-columns: repeat(10, 1fr);
-            gap: 4px;
-            max-width: 400px;
+            gap: 3px;
+            max-width: 420px;
             margin: 10px auto 14px;
         }
         .heart-cell {
@@ -313,10 +313,10 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 20px;
+            font-size: 18px;
             cursor: pointer;
             background: rgba(245, 237, 232, 0.4);
-            border-radius: 8px;
+            border-radius: 6px;
             transition: 0.15s;
         }
         .heart-cell:hover { background: rgba(245, 237, 232, 0.8); }
@@ -328,6 +328,7 @@
             padding: 8px;
             margin: 6px 0 12px;
             touch-action: none;
+            cursor: grab;
         }
         .maze-wrap canvas {
             display: block;
@@ -337,7 +338,7 @@
             border-radius: 12px;
             background: #faf5f0;
             touch-action: none;
-            cursor: pointer;
+            cursor: grab;
         }
 
         .final-question-buttons {
@@ -397,8 +398,8 @@
             .emoji-display { font-size: 44px; }
             .big-heart { font-size: 80px; }
             .memory-grid { gap: 6px; }
-            .heart-grid { gap: 3px; }
-            .heart-cell { font-size: 16px; }
+            .heart-grid { gap: 2px; }
+            .heart-cell { font-size: 14px; }
             .word-chip { font-size: 15px; padding: 6px 12px; }
             .btn-yes, .btn-no { padding: 14px 30px; font-size: 22px; min-width: 90px; }
             .final-page .big-hearts { font-size: 40px; }
@@ -798,6 +799,7 @@
         });
     }
 
+    // ----- ИСПРАВЛЕННЫЙ ПАЗЛ -----
     function game_puzzle(container, onWin) {
         const imgSrc = 'images/photo17.jpg';
         container.innerHTML = `
@@ -853,8 +855,9 @@
                 div.style.transition = 'all 0.2s ease';
                 div.style.aspectRatio = '1/1';
                 
-                const col = value % size;
-                const row = Math.floor(value / size);
+                // Правильная позиция: используем i (позиция в сетке) для обрезки
+                const col = i % size;
+                const row = Math.floor(i / size);
                 const xPercent = col * 33.33;
                 const yPercent = row * 33.33;
                 div.style.backgroundImage = `url(${imgSrc})`;
@@ -1165,7 +1168,6 @@
         canvas.addEventListener('touchend', endDraw);
     }
 
-    // ----- ИСПРАВЛЕННАЯ ИГРА "СОБЕРИ ФРАЗУ" -----
     function game_phrase(container, onWin) {
         const correct = ['я', 'тебя', 'люблю'];
         const extra = ['кот', 'мир', 'солнце', 'ты', 'море', 'небо', 'счастье', 'звезда', 'вечность', 'сердце', 'жизнь', 'радость', 'дом', 'свет', 'огонь'];
@@ -1202,7 +1204,6 @@
             resultEl.textContent = selected.join(' ');
         }
 
-        // Клик по слову — добавляем в выбранное, НЕ скрываем
         poolEl.addEventListener('click', function(e) {
             const el = e.target.closest('.word-chip');
             if (!el) return;
@@ -1236,7 +1237,7 @@
 
     // ----- ИСПРАВЛЕННАЯ ИГРА "НАЙДИ ЦЕЛОЕ СЕРДЕЧКО" -----
     function game_findHeart(container, onWin) {
-        const rows = 8, cols = 10;
+        const rows = 10, cols = 10;
         const total = rows * cols;
         const heartPos = Math.floor(Math.random() * total);
 
@@ -1251,8 +1252,7 @@
         for (let i = 0; i < total; i++) {
             const div = document.createElement('div');
             div.className = 'heart-cell';
-            // Используем 🫶 для целого сердечка (оно плоское и меньше выделяется)
-            div.textContent = i === heartPos ? '🫶' : '💔';
+            div.textContent = i === heartPos ? '❤️' : '💔';
             div.dataset.idx = i;
             div.dataset.isHeart = i === heartPos ? 'true' : 'false';
             grid.appendChild(div);
@@ -1279,12 +1279,12 @@
         });
     }
 
-    // ----- ИСПРАВЛЕННАЯ ИГРА "ЛАБИРИНТ" -----
+    // ----- ИСПРАВЛЕННЫЙ ЛАБИРИНТ (готовый сложный) -----
     function game_maze(container, onWin) {
         container.innerHTML = `
-            <div style="font-size:16px;color:#6b5a4a;margin-bottom:6px;">Кликни на клетку, чтобы переместить ❤️ к 🏆</div>
+            <div style="font-size:16px;color:#6b5a4a;margin-bottom:6px;">Перетащи ❤️ к 🏆</div>
             <div class="maze-wrap">
-                <canvas id="mazeCanvas" width="400" height="400"></canvas>
+                <canvas id="mazeCanvas" width="450" height="450"></canvas>
             </div>
             <div id="mazeStatus" style="font-size:16px;color:#8a7a6a;"></div>
         `;
@@ -1292,53 +1292,57 @@
         const ctx = canvas.getContext('2d');
         const status = container.querySelector('#mazeStatus');
 
-        const W = 400, H = 400;
-        const cols = 7, rows = 7;
+        const W = 450, H = 450;
+        const cols = 9, rows = 9;
         const cellSize = W / cols;
 
+        // Готовый сложный лабиринт 9x9 (0 = проход, 1 = стена)
+        // Стены между клетками: wallsV[r][c] - вертикальная стена справа от клетки (r,c)
+        // wallsH[r][c] - горизонтальная стена снизу от клетки (r,c)
+        // 1 = стена, 0 = проход
+        
+        // Сложный заранее заданный лабиринт
+        const mazeData = [
+            // Верхняя стена (r=0)
+            { h: [1,1,1,1,1,1,1,1,1], v: [1,1,1,1,1,0,1,1] },
+            // r=1
+            { h: [1,0,1,0,0,1,1,0,1], v: [1,0,1,1,1,0,1,0] },
+            // r=2
+            { h: [1,0,1,1,0,1,1,0,1], v: [1,0,0,1,1,1,0,1] },
+            // r=3
+            { h: [1,1,1,1,0,1,1,0,1], v: [0,1,1,0,1,1,1,0] },
+            // r=4
+            { h: [0,0,1,0,0,0,1,0,1], v: [0,1,0,1,1,0,1,0] },
+            // r=5
+            { h: [0,1,1,0,1,0,0,0,1], v: [0,0,1,0,1,0,1,0] },
+            // r=6
+            { h: [1,0,1,0,1,0,1,0,1], v: [1,0,0,0,0,0,1,0] },
+            // r=7
+            { h: [1,0,0,0,1,0,0,0,1], v: [1,1,0,0,0,0,0,0] },
+            // r=8 (нижняя стена)
+            { h: [1,1,1,1,1,1,1,1,1], v: [1,1,0,0,0,0,0,1] }
+        ];
+
+        // Строим стены из данных
         let wallsV = [];
         let wallsH = [];
         for (let r = 0; r < rows; r++) {
             wallsV[r] = [];
-            for (let c = 0; c < cols - 1; c++) wallsV[r][c] = 1;
+            for (let c = 0; c < cols - 1; c++) {
+                wallsV[r][c] = mazeData[r].v[c] || 1;
+            }
         }
         for (let r = 0; r < rows - 1; r++) {
             wallsH[r] = [];
-            for (let c = 0; c < cols; c++) wallsH[r][c] = 1;
-        }
-
-        function generateMaze() {
-            const visited = Array.from({length: rows}, () => Array(cols).fill(false));
-            const stack = [];
-            const startR = 0, startC = 0;
-            visited[startR][startC] = true;
-            stack.push([startR, startC]);
-
-            while (stack.length > 0) {
-                const [r, c] = stack[stack.length - 1];
-                const neighbors = [];
-                if (r > 0 && !visited[r-1][c]) neighbors.push([r-1, c, 'up']);
-                if (r < rows-1 && !visited[r+1][c]) neighbors.push([r+1, c, 'down']);
-                if (c > 0 && !visited[r][c-1]) neighbors.push([r, c-1, 'left']);
-                if (c < cols-1 && !visited[r][c+1]) neighbors.push([r, c+1, 'right']);
-
-                if (neighbors.length === 0) {
-                    stack.pop();
-                } else {
-                    const [nr, nc, dir] = neighbors[Math.floor(Math.random() * neighbors.length)];
-                    visited[nr][nc] = true;
-                    if (dir === 'up') { wallsH[nr][c] = 0; }
-                    else if (dir === 'down') { wallsH[r][c] = 0; }
-                    else if (dir === 'left') { wallsV[r][nc] = 0; }
-                    else if (dir === 'right') { wallsV[r][c] = 0; }
-                    stack.push([nr, nc]);
-                }
+            for (let c = 0; c < cols; c++) {
+                wallsH[r][c] = mazeData[r].h[c] || 1;
             }
         }
-        generateMaze();
 
-        // Позиция игрока (в клетках)
         let playerR = 0, playerC = 0;
+        let isDragging = false;
+        let dragStartX = 0, dragStartY = 0;
+        let dragStartR = 0, dragStartC = 0;
 
         function drawMaze() {
             ctx.clearRect(0, 0, W, H);
@@ -1346,7 +1350,7 @@
             ctx.fillRect(0, 0, W, H);
 
             ctx.strokeStyle = '#4a3729';
-            ctx.lineWidth = 3;
+            ctx.lineWidth = 2.5;
 
             for (let r = 0; r < rows; r++) {
                 for (let c = 0; c < cols - 1; c++) {
@@ -1372,7 +1376,7 @@
             ctx.strokeRect(0, 0, W, H);
 
             // Старт и финиш
-            ctx.font = '24px sans-serif';
+            ctx.font = '26px sans-serif';
             ctx.fillStyle = '#c97a5a';
             ctx.fillText('❤️', 6, 36);
             ctx.fillStyle = '#d4a88a';
@@ -1381,10 +1385,13 @@
             // Игрок
             const px = playerC * cellSize + cellSize/2;
             const py = playerR * cellSize + cellSize/2;
+            ctx.shadowColor = 'rgba(201, 122, 90, 0.5)';
+            ctx.shadowBlur = 15;
             ctx.beginPath();
-            ctx.arc(px, py, 14, 0, Math.PI * 2);
+            ctx.arc(px, py, 16, 0, Math.PI * 2);
             ctx.fillStyle = '#c97a5a';
             ctx.fill();
+            ctx.shadowBlur = 0;
             ctx.strokeStyle = '#fff';
             ctx.lineWidth = 3;
             ctx.stroke();
@@ -1392,47 +1399,87 @@
 
         function canMoveTo(r, c) {
             if (r < 0 || r >= rows || c < 0 || c >= cols) return false;
-            // Проверка стен
+            if (r === playerR && c === playerC) return false;
+            
+            // Проверка стен между текущей и целевой клеткой
             if (c < playerC && wallsV[r][c] === 1) return false;
             if (c > playerC && wallsV[r][c-1] === 1) return false;
             if (r < playerR && wallsH[r][c] === 1) return false;
             if (r > playerR && wallsH[r-1][c] === 1) return false;
+            
             return true;
         }
 
-        function handleClick(e) {
-            const rect = canvas.getBoundingClientRect();
-            const scaleX = canvas.width / rect.width;
-            const scaleY = canvas.height / rect.height;
-            const clientX = e.clientX || e.touches[0].clientX;
-            const clientY = e.clientY || e.touches[0].clientY;
-            const x = (clientX - rect.left) * scaleX;
-            const y = (clientY - rect.top) * scaleY;
-            
-            const c = Math.floor(x / cellSize);
-            const r = Math.floor(y / cellSize);
-            if (r < 0 || r >= rows || c < 0 || c >= cols) return;
-            
+        function tryMoveTo(r, c) {
             if (canMoveTo(r, c)) {
                 playerR = r;
                 playerC = c;
                 drawMaze();
                 
-                // Проверка финиша
                 if (playerR === rows-1 && playerC === cols-1) {
                     status.textContent = '🎉 Ты прошла лабиринт! Молодец! ❤️';
                     canvas.style.pointerEvents = 'none';
                     onWin();
                 }
+                return true;
+            }
+            return false;
+        }
+
+        // Обработчики для перетаскивания
+        function getCellFromPos(e) {
+            const rect = canvas.getBoundingClientRect();
+            const scaleX = canvas.width / rect.width;
+            const scaleY = canvas.height / rect.height;
+            const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+            const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+            const x = (clientX - rect.left) * scaleX;
+            const y = (clientY - rect.top) * scaleY;
+            return { c: Math.floor(x / cellSize), r: Math.floor(y / cellSize) };
+        }
+
+        function onStart(e) {
+            e.preventDefault();
+            const pos = getCellFromPos(e);
+            if (pos.r === playerR && pos.c === playerC) {
+                isDragging = true;
+                dragStartR = playerR;
+                dragStartC = playerC;
+                canvas.style.cursor = 'grabbing';
             }
         }
 
-        canvas.addEventListener('click', handleClick);
-        canvas.addEventListener('touchstart', function(e) {
+        function onMove(e) {
             e.preventDefault();
-            handleClick(e);
-        });
+            if (!isDragging) return;
+            const pos = getCellFromPos(e);
+            const dr = pos.r - dragStartR;
+            const dc = pos.c - dragStartC;
+            
+            // Движение только на соседнюю клетку
+            if (Math.abs(dr) + Math.abs(dc) === 1) {
+                if (tryMoveTo(pos.r, pos.c)) {
+                    dragStartR = playerR;
+                    dragStartC = playerC;
+                }
+            }
+        }
 
+        function onEnd(e) {
+            e.preventDefault();
+            isDragging = false;
+            canvas.style.cursor = 'grab';
+        }
+
+        canvas.addEventListener('mousedown', onStart);
+        canvas.addEventListener('mousemove', onMove);
+        canvas.addEventListener('mouseup', onEnd);
+        canvas.addEventListener('mouseleave', onEnd);
+        canvas.addEventListener('touchstart', onStart);
+        canvas.addEventListener('touchmove', onMove);
+        canvas.addEventListener('touchend', onEnd);
+
+        canvas.style.cursor = 'grab';
         drawMaze();
     }
 
