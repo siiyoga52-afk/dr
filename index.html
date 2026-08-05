@@ -303,9 +303,9 @@
 
         .heart-grid {
             display: grid;
-            grid-template-columns: repeat(8, 1fr);
-            gap: 6px;
-            max-width: 380px;
+            grid-template-columns: repeat(10, 1fr);
+            gap: 4px;
+            max-width: 400px;
             margin: 10px auto 14px;
         }
         .heart-cell {
@@ -313,10 +313,10 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 28px;
+            font-size: 20px;
             cursor: pointer;
             background: rgba(245, 237, 232, 0.4);
-            border-radius: 12px;
+            border-radius: 8px;
             transition: 0.15s;
         }
         .heart-cell:hover { background: rgba(245, 237, 232, 0.8); }
@@ -337,7 +337,7 @@
             border-radius: 12px;
             background: #faf5f0;
             touch-action: none;
-            cursor: crosshair;
+            cursor: pointer;
         }
 
         .final-question-buttons {
@@ -397,8 +397,8 @@
             .emoji-display { font-size: 44px; }
             .big-heart { font-size: 80px; }
             .memory-grid { gap: 6px; }
-            .heart-grid { gap: 4px; }
-            .heart-cell { font-size: 20px; }
+            .heart-grid { gap: 3px; }
+            .heart-cell { font-size: 16px; }
             .word-chip { font-size: 15px; padding: 6px 12px; }
             .btn-yes, .btn-no { padding: 14px 30px; font-size: 22px; min-width: 90px; }
             .final-page .big-hearts { font-size: 40px; }
@@ -407,7 +407,7 @@
         @media (max-width: 380px) {
             .container { padding: 14px 10px; }
             .q-text { font-size: 17px; }
-            .heart-grid { grid-template-columns: repeat(6, 1fr); }
+            .heart-grid { grid-template-columns: repeat(8, 1fr); }
             .puzzle-grid { max-width: 220px; }
         }
     </style>
@@ -798,9 +798,6 @@
         });
     }
 
-    // ============================================================
-    //  ПАЗЛ - 9 фрагментов, обмен по клику
-    // ============================================================
     function game_puzzle(container, onWin) {
         const imgSrc = 'images/photo17.jpg';
         container.innerHTML = `
@@ -1168,6 +1165,7 @@
         canvas.addEventListener('touchend', endDraw);
     }
 
+    // ----- ИСПРАВЛЕННАЯ ИГРА "СОБЕРИ ФРАЗУ" -----
     function game_phrase(container, onWin) {
         const correct = ['я', 'тебя', 'люблю'];
         const extra = ['кот', 'мир', 'солнце', 'ты', 'море', 'небо', 'счастье', 'звезда', 'вечность', 'сердце', 'жизнь', 'радость', 'дом', 'свет', 'огонь'];
@@ -1180,7 +1178,7 @@
         let selected = [];
 
         container.innerHTML = `
-            <div style="font-size:16px;color:#6b5a4a;margin-bottom:6px;">Собери фразу: кликай на слова по порядку</div>
+            <div style="font-size:16px;color:#6b5a4a;margin-bottom:6px;">Собери фразу: введи 3 слова по порядку</div>
             <div class="word-pool" id="wordPool"></div>
             <div style="font-size:18px;color:#4a3729;margin:6px 0;min-height:32px;" id="phraseResult"></div>
             <button class="btn" id="phraseCheckBtn" style="margin-top:8px;">Проверить</button>
@@ -1204,16 +1202,14 @@
             resultEl.textContent = selected.join(' ');
         }
 
+        // Клик по слову — добавляем в выбранное, НЕ скрываем
         poolEl.addEventListener('click', function(e) {
             const el = e.target.closest('.word-chip');
             if (!el) return;
-            if (el.classList.contains('used')) return;
             const word = el.dataset.word;
-            selected.push(word);
-            el.classList.add('used');
-            resultEl.textContent = selected.join(' ');
-            if (selected.length === correct.length) {
-                checkPhrase();
+            if (selected.length < 3) {
+                selected.push(word);
+                resultEl.textContent = selected.join(' ');
             }
         });
 
@@ -1229,8 +1225,7 @@
                 msg.className = 'message error';
                 msg.textContent = '❌ Не та фраза, попробуй ещё раз!';
                 selected = [];
-                pool.forEach(el => el.classList.remove('used'));
-                renderPool();
+                resultEl.textContent = '';
                 setTimeout(() => { msg.className = 'message'; msg.textContent = ''; }, 1500);
             }
         }
@@ -1239,8 +1234,9 @@
         renderPool();
     }
 
+    // ----- ИСПРАВЛЕННАЯ ИГРА "НАЙДИ ЦЕЛОЕ СЕРДЕЧКО" -----
     function game_findHeart(container, onWin) {
-        const rows = 6, cols = 6;
+        const rows = 8, cols = 10;
         const total = rows * cols;
         const heartPos = Math.floor(Math.random() * total);
 
@@ -1255,7 +1251,8 @@
         for (let i = 0; i < total; i++) {
             const div = document.createElement('div');
             div.className = 'heart-cell';
-            div.textContent = i === heartPos ? '❤️' : '💔';
+            // Используем 🫶 для целого сердечка (оно плоское и меньше выделяется)
+            div.textContent = i === heartPos ? '🫶' : '💔';
             div.dataset.idx = i;
             div.dataset.isHeart = i === heartPos ? 'true' : 'false';
             grid.appendChild(div);
@@ -1282,9 +1279,10 @@
         });
     }
 
+    // ----- ИСПРАВЛЕННАЯ ИГРА "ЛАБИРИНТ" -----
     function game_maze(container, onWin) {
         container.innerHTML = `
-            <div style="font-size:16px;color:#6b5a4a;margin-bottom:6px;">Проведи от ❤️ до 🏆, не касаясь стен</div>
+            <div style="font-size:16px;color:#6b5a4a;margin-bottom:6px;">Кликни на клетку, чтобы переместить ❤️ к 🏆</div>
             <div class="maze-wrap">
                 <canvas id="mazeCanvas" width="400" height="400"></canvas>
             </div>
@@ -1295,7 +1293,7 @@
         const status = container.querySelector('#mazeStatus');
 
         const W = 400, H = 400;
-        const cols = 5, rows = 5;
+        const cols = 7, rows = 7;
         const cellSize = W / cols;
 
         let wallsV = [];
@@ -1339,6 +1337,9 @@
         }
         generateMaze();
 
+        // Позиция игрока (в клетках)
+        let playerR = 0, playerC = 0;
+
         function drawMaze() {
             ctx.clearRect(0, 0, W, H);
             ctx.fillStyle = '#faf5f0';
@@ -1370,53 +1371,55 @@
 
             ctx.strokeRect(0, 0, W, H);
 
-            ctx.font = '28px sans-serif';
+            // Старт и финиш
+            ctx.font = '24px sans-serif';
             ctx.fillStyle = '#c97a5a';
             ctx.fillText('❤️', 6, 36);
             ctx.fillStyle = '#d4a88a';
             ctx.fillText('🏆', (cols-1)*cellSize + 6, (rows-1)*cellSize + 36);
-        }
 
-        drawMaze();
-
-        let posX = 0.5, posY = 0.5;
-        let isDragging = false;
-
-        function canMoveTo(x, y) {
-            const c = x / cellSize;
-            const r = y / cellSize;
-            if (x < 0 || x > W || y < 0 || y > H) return false;
-            const col = Math.floor(c);
-            const row = Math.floor(r);
-            if (col < 0 || col >= cols || row < 0 || row >= rows) return false;
-            const offsetX = c - col;
-            const offsetY = r - row;
-            if (offsetX > 0.7 && col < cols - 1 && wallsV[row][col] === 1) return false;
-            if (offsetX < 0.3 && col > 0 && wallsV[row][col-1] === 1) return false;
-            if (offsetY > 0.7 && row < rows - 1 && wallsH[row][col] === 1) return false;
-            if (offsetY < 0.3 && row > 0 && wallsH[row-1][col] === 1) return false;
-            return true;
-        }
-
-        function drawPlayer(x, y) {
-            drawMaze();
+            // Игрок
+            const px = playerC * cellSize + cellSize/2;
+            const py = playerR * cellSize + cellSize/2;
             ctx.beginPath();
-            ctx.arc(x, y, 12, 0, Math.PI * 2);
+            ctx.arc(px, py, 14, 0, Math.PI * 2);
             ctx.fillStyle = '#c97a5a';
             ctx.fill();
             ctx.strokeStyle = '#fff';
-            ctx.lineWidth = 2;
+            ctx.lineWidth = 3;
             ctx.stroke();
         }
 
-        function updatePos(x, y) {
-            if (canMoveTo(x, y)) {
-                posX = Math.max(6, Math.min(W-6, x));
-                posY = Math.max(6, Math.min(H-6, y));
-                drawPlayer(posX, posY);
-                const endX = (cols-1) * cellSize + cellSize/2;
-                const endY = (rows-1) * cellSize + cellSize/2;
-                if (Math.abs(posX - endX) < 20 && Math.abs(posY - endY) < 20) {
+        function canMoveTo(r, c) {
+            if (r < 0 || r >= rows || c < 0 || c >= cols) return false;
+            // Проверка стен
+            if (c < playerC && wallsV[r][c] === 1) return false;
+            if (c > playerC && wallsV[r][c-1] === 1) return false;
+            if (r < playerR && wallsH[r][c] === 1) return false;
+            if (r > playerR && wallsH[r-1][c] === 1) return false;
+            return true;
+        }
+
+        function handleClick(e) {
+            const rect = canvas.getBoundingClientRect();
+            const scaleX = canvas.width / rect.width;
+            const scaleY = canvas.height / rect.height;
+            const clientX = e.clientX || e.touches[0].clientX;
+            const clientY = e.clientY || e.touches[0].clientY;
+            const x = (clientX - rect.left) * scaleX;
+            const y = (clientY - rect.top) * scaleY;
+            
+            const c = Math.floor(x / cellSize);
+            const r = Math.floor(y / cellSize);
+            if (r < 0 || r >= rows || c < 0 || c >= cols) return;
+            
+            if (canMoveTo(r, c)) {
+                playerR = r;
+                playerC = c;
+                drawMaze();
+                
+                // Проверка финиша
+                if (playerR === rows-1 && playerC === cols-1) {
                     status.textContent = '🎉 Ты прошла лабиринт! Молодец! ❤️';
                     canvas.style.pointerEvents = 'none';
                     onWin();
@@ -1424,51 +1427,13 @@
             }
         }
 
-        function handleMove(e) {
-            if (!isDragging) return;
-            e.preventDefault();
-            const rect = canvas.getBoundingClientRect();
-            const scaleX = canvas.width / rect.width;
-            const scaleY = canvas.height / rect.height;
-            const clientX = e.touches ? e.touches[0].clientX : e.clientX;
-            const clientY = e.touches ? e.touches[0].clientY : e.clientY;
-            const x = (clientX - rect.left) * scaleX;
-            const y = (clientY - rect.top) * scaleY;
-            updatePos(x, y);
-        }
-
-        canvas.addEventListener('mousedown', function(e) {
-            const rect = canvas.getBoundingClientRect();
-            const scaleX = canvas.width / rect.width;
-            const scaleY = canvas.height / rect.height;
-            const x = (e.clientX - rect.left) * scaleX;
-            const y = (e.clientY - rect.top) * scaleY;
-            if (canMoveTo(x, y)) {
-                isDragging = true;
-                updatePos(x, y);
-            }
-        });
-        canvas.addEventListener('mousemove', handleMove);
-        canvas.addEventListener('mouseup', function(e) { isDragging = false; });
-        canvas.addEventListener('mouseleave', function(e) { isDragging = false; });
-
+        canvas.addEventListener('click', handleClick);
         canvas.addEventListener('touchstart', function(e) {
             e.preventDefault();
-            const rect = canvas.getBoundingClientRect();
-            const scaleX = canvas.width / rect.width;
-            const scaleY = canvas.height / rect.height;
-            const touch = e.touches[0];
-            const x = (touch.clientX - rect.left) * scaleX;
-            const y = (touch.clientY - rect.top) * scaleY;
-            if (canMoveTo(x, y)) {
-                isDragging = true;
-                updatePos(x, y);
-            }
+            handleClick(e);
         });
-        canvas.addEventListener('touchmove', handleMove);
-        canvas.addEventListener('touchend', function(e) { isDragging = false; });
 
-        drawPlayer(6, 6);
+        drawMaze();
     }
 
     function game_finalQuestion(container, onWin) {
