@@ -227,8 +227,10 @@
             justify-content: center;
             font-size: 40px;
             color: #b8a898;
+            width: 100%;
+            height: 100%;
         }
-        .puzzle-piece:hover { opacity: 0.8; }
+        .puzzle-piece:hover { opacity: 0.8; transform: scale(0.97); }
         .puzzle-piece.placed { border-color: #8a9a7a; }
 
         .memory-grid {
@@ -812,21 +814,27 @@
         const status = container.querySelector('#puzzleStatus');
         const size = 3;
         const total = size * size;
+        
+        // Изначальный порядок
         let pieces = [];
         for (let i = 0; i < total; i++) pieces.push(i);
         
-        // Перемешиваем
-        for (let i = pieces.length - 1; i > 0; i--) {
-            const j = Math.floor(Math.random() * (i + 1));
+        // Перемешиваем (делаем 100 случайных обменов)
+        for (let step = 0; step < 100; step++) {
+            const i = Math.floor(Math.random() * total);
+            let j = Math.floor(Math.random() * total);
+            while (j === i) j = Math.floor(Math.random() * total);
             [pieces[i], pieces[j]] = [pieces[j], pieces[i]];
         }
-        // Убеждаемся, что не все на месте
-        let allPlaced = true;
+        
+        // Убеждаемся, что пустое место точно есть
+        let emptyIdx = -1;
         for (let i = 0; i < total; i++) {
-            if (pieces[i] !== i) { allPlaced = false; break; }
+            if (pieces[i] === i) { emptyIdx = i; break; }
         }
-        if (allPlaced) {
-            [pieces[total-1], pieces[total-2]] = [pieces[total-2], pieces[total-1]];
+        if (emptyIdx === -1) {
+            pieces[total - 1] = total - 1;
+            emptyIdx = total - 1;
         }
 
         function render() {
@@ -836,10 +844,12 @@
                 const div = document.createElement('div');
                 div.className = 'puzzle-piece';
                 div.style.cursor = 'pointer';
+                div.style.width = '100%';
+                div.style.height = '100%';
+                div.style.position = 'relative';
                 
                 if (idx === i) {
-                    // пустое место
-                    div.classList.add('placed');
+                    // Пустое место
                     div.style.background = '#e8ddd0';
                     div.textContent = '⬜';
                     div.style.display = 'flex';
@@ -850,14 +860,13 @@
                     div.dataset.empty = 'true';
                     div.style.backgroundImage = 'none';
                 } else {
-                    // фрагмент картинки
-                    div.style.backgroundImage = `url(${imgSrc})`;
-                    div.style.backgroundSize = '300% 300%';
-                    div.style.backgroundRepeat = 'no-repeat';
+                    // Фрагмент картинки
                     const col = idx % size;
                     const row = Math.floor(idx / size);
+                    div.style.backgroundImage = `url(${imgSrc})`;
+                    div.style.backgroundSize = '300% 300%';
                     div.style.backgroundPosition = `${col * 33.33}% ${row * 33.33}%`;
-                    div.style.border = '2px solid #d4c8b8';
+                    div.style.backgroundRepeat = 'no-repeat';
                     div.dataset.empty = 'false';
                     div.textContent = '';
                 }
@@ -866,6 +875,7 @@
                 grid.appendChild(div);
             }
             
+            // Проверка победы
             let correct = 0;
             for (let i = 0; i < total; i++) {
                 if (pieces[i] === i) correct++;
@@ -878,37 +888,43 @@
             }
         }
 
-        // Обработчик клика по сетке
-        grid.addEventListener('click', function(e) {
+        // Обработчик клика
+        function handlePuzzleClick(e) {
             const el = e.target.closest('.puzzle-piece');
             if (!el) return;
             
-            // Если кликнули по пустому месту — игнорируем
+            // Если кликнули по пустому месту — ничего не делаем
             if (el.dataset.empty === 'true') return;
             
             const idx = parseInt(el.dataset.index);
             
-            // Ищем пустое место
+            // Находим пустое место
             let emptyIdx = -1;
             for (let i = 0; i < total; i++) {
                 if (pieces[i] === i) { emptyIdx = i; break; }
             }
             if (emptyIdx === -1) return;
             
-            // Проверяем, соседние ли клетки
+            // Проверяем, соседние ли клетки (по горизонтали или вертикали)
             const idxRow = Math.floor(idx / size);
             const idxCol = idx % size;
             const emptyRow = Math.floor(emptyIdx / size);
             const emptyCol = emptyIdx % size;
             
-            const isAdjacent = (Math.abs(idxRow - emptyRow) + Math.abs(idxCol - emptyCol)) === 1;
-            if (!isAdjacent) return;
+            const rowDiff = Math.abs(idxRow - emptyRow);
+            const colDiff = Math.abs(idxCol - emptyCol);
             
-            // Меняем местами
-            [pieces[idx], pieces[emptyIdx]] = [pieces[emptyIdx], pieces[idx]];
-            render();
-        });
+            // Соседние, если отличаются на 1 по одной оси и на 0 по другой
+            if ((rowDiff === 1 && colDiff === 0) || (rowDiff === 0 && colDiff === 1)) {
+                // Меняем местами
+                [pieces[idx], pieces[emptyIdx]] = [pieces[emptyIdx], pieces[idx]];
+                render();
+            }
+        }
 
+        // Вешаем обработчик на сетку (делегирование)
+        grid.addEventListener('click', handlePuzzleClick);
+        
         render();
     }
 
