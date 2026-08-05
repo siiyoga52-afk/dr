@@ -70,6 +70,9 @@
             font-weight: 700;
             letter-spacing: 1px;
             width: 100%;
+            max-width: 300px;
+            margin: 0 auto;
+            display: block;
             position: relative;
             overflow: hidden;
             transition: 0.3s;
@@ -81,6 +84,22 @@
             background: linear-gradient(135deg, #b8c4a8, #8a9a7a);
         }
         .btn-next:hover { box-shadow: 0 8px 25px rgba(138, 154, 122, 0.4); }
+
+        .intro-page .btn {
+            max-width: 300px;
+        }
+
+        .success-page .btn {
+            max-width: 300px;
+        }
+
+        #emojiBtn {
+            max-width: 200px;
+        }
+
+        #phraseCheckBtn {
+            max-width: 200px;
+        }
 
         /* ── страницы ── */
         .page { display: none; }
@@ -536,39 +555,29 @@
             a: 1,
             txt: 'Ты у меня умница и ты мой номер 1 💕!',
             img: 'images/photo8.jpg'
-        },
+        }
     ];
 
     // Игры: каждая функция рендерит контент в #gameContent и вызывает onGameComplete() при победе
     const GAMES = [
-        // 1 — Угадай эмодзи (CS2)
         game_emoji,
-        // 2 — Кликер-сердечко (большое сердце, 30 кликов)
         game_bigHeart,
-        // 3 — Пазл 3x3 (ваше фото)
         game_puzzle,
-        // 4 — Мемори 6 пар (фотки)
         game_memory,
-        // 5 — Дорисуй сердечко
         game_drawHeart,
-        // 6 — Собери фразу "Я тебя люблю" с кучей лишних слов
         game_phrase,
-        // 7 — Найди целое сердечко среди разбитых
         game_findHeart,
-        // 8 — Лабиринт 5x5
         game_maze,
-        // 9 — Финальный вопрос (последняя игра — переход на финал)
         game_finalQuestion
     ];
 
     // ============================================================
     //  СОСТОЯНИЕ
     // ============================================================
-    let currentQ = 0;              // индекс текущего вопроса (0..8)
-    let currentGame = -1;          // индекс текущей игры (-1 если ещё не начата)
-    let gameCompleted = false;     // флаг что игра пройдена
+    let currentQ = 0;
+    let currentGame = -1;
+    let gameCompleted = false;
 
-    // элементы
     const $ = id => document.getElementById(id);
     const introPage = $('introPage');
     const questionPage = $('questionPage');
@@ -608,7 +617,6 @@
         qMessage.className = 'message';
         qMessage.textContent = '';
         submitBtn.disabled = false;
-        // прогресс
         const pct = (index / questions.length) * 100;
         progressFill.style.width = pct + '%';
         showPage(questionPage);
@@ -619,7 +627,6 @@
         const q = questions[index];
         sNumber.textContent = `Вопрос ${index+1} из ${questions.length}`;
         sText.textContent = q.txt;
-        // картинка
         sImages.innerHTML = '';
         if (q.img) {
             const img = document.createElement('img');
@@ -645,28 +652,23 @@
         gameNextBtn.style.display = 'none';
         gameNumber.textContent = `Игра ${gameIndex+1} из ${GAMES.length}`;
         showPage(gamePage);
-        // вызываем функцию игры
         GAMES[gameIndex](gameContent, () => {
             gameCompleted = true;
             gameNextBtn.style.display = 'block';
         });
     }
 
-    // Кнопка "Игра" на странице успеха
     nextToGameBtn.addEventListener('click', function() {
-        const gameIdx = currentQ; // 0..8
+        const gameIdx = currentQ;
         if (gameIdx < GAMES.length) {
             startGame(gameIdx);
         } else {
-            // на всякий случай
             showFinal();
         }
     });
 
-    // Кнопка "Дальше" после игры
     gameNextBtn.addEventListener('click', function() {
         if (!gameCompleted) return;
-        // переходим к следующему вопросу
         currentQ++;
         if (currentQ < questions.length) {
             loadQuestion(currentQ);
@@ -756,25 +758,75 @@
         setTimeout(() => input.focus(), 100);
     }
 
-    // ----- 2. Кликер-сердечко (большое сердце, 30 кликов) -----
+    // ----- 2. Кликер-сердечко (большое сердце, 30 кликов за 5 секунд) -----
     function game_bigHeart(container, onWin) {
         let clicks = 0;
         const target = 30;
+        let timerId = null;
+        let timeLeft = 5;
+        let isActive = false;
+
         container.innerHTML = `
-            <div style="font-size:20px;color:#4a3729;margin-bottom:4px;">Кликни по сердцу <span id="clickCount">0</span> / ${target}</div>
+            <div style="font-size:20px;color:#4a3729;margin-bottom:4px;">
+                Кликни по сердцу <span id="clickCount">0</span> / ${target}
+            </div>
+            <div style="font-size:18px;color:#c97a5a;margin-bottom:6px;">
+                ⏱️ <span id="timerDisplay">5</span> сек
+            </div>
             <div class="big-heart" id="bigHeart">❤️</div>
             <div style="font-size:16px;color:#8a7a6a;" id="heartMsg">Кликай! ❤️</div>
         `;
         const heart = container.querySelector('#bigHeart');
         const counter = container.querySelector('#clickCount');
+        const timerDisplay = container.querySelector('#timerDisplay');
         const msg = container.querySelector('#heartMsg');
+
+        function resetGame() {
+            clicks = 0;
+            timeLeft = 5;
+            isActive = false;
+            counter.textContent = '0';
+            timerDisplay.textContent = '5';
+            msg.textContent = 'Кликай! ❤️';
+            heart.style.pointerEvents = 'auto';
+            heart.style.opacity = '1';
+            if (timerId) {
+                clearInterval(timerId);
+                timerId = null;
+            }
+        }
+
+        function startTimer() {
+            if (isActive) return;
+            isActive = true;
+            timerId = setInterval(() => {
+                timeLeft--;
+                timerDisplay.textContent = timeLeft;
+                if (timeLeft <= 0) {
+                    clearInterval(timerId);
+                    timerId = null;
+                    msg.textContent = '⏰ Время вышло! Попробуй ещё раз!';
+                    heart.style.pointerEvents = 'none';
+                    heart.style.opacity = '0.5';
+                    setTimeout(() => {
+                        resetGame();
+                    }, 1200);
+                }
+            }, 1000);
+        }
+
         heart.addEventListener('click', function() {
+            if (heart.style.pointerEvents === 'none') return;
+            if (!isActive) {
+                startTimer();
+            }
             clicks++;
             counter.textContent = clicks;
-            // маленькая анимация
             heart.style.transform = 'scale(0.85)';
             setTimeout(() => heart.style.transform = 'scale(1)', 100);
             if (clicks >= target) {
+                clearInterval(timerId);
+                timerId = null;
                 msg.textContent = '🎉 30 раз люблю тебя! ❤️';
                 heart.style.pointerEvents = 'none';
                 heart.style.opacity = '0.6';
@@ -785,7 +837,6 @@
 
     // ----- 3. Пазл 3x3 (ваше фото) -----
     function game_puzzle(container, onWin) {
-        // используем photo3.jpg как основу для пазла (можно заменить)
         const imgSrc = 'images/photo17.jpg';
         container.innerHTML = `
             <div style="font-size:16px;color:#6b5a4a;margin-bottom:6px;">Перетащи части на места</div>
@@ -797,17 +848,12 @@
         const size = 3;
         const total = size * size;
         let pieces = [];
-        let placed = 0;
-
-        // создаём порядок
         for (let i = 0; i < total; i++) pieces.push(i);
-        // перемешиваем
         for (let i = pieces.length - 1; i > 0; i--) {
             const j = Math.floor(Math.random() * (i + 1));
             [pieces[i], pieces[j]] = [pieces[j], pieces[i]];
         }
 
-        // строим сетку
         function render() {
             grid.innerHTML = '';
             for (let i = 0; i < total; i++) {
@@ -833,7 +879,6 @@
                 div.dataset.value = idx;
                 grid.appendChild(div);
             }
-            // проверка победы
             let correct = 0;
             for (let i = 0; i < total; i++) {
                 if (pieces[i] === i) correct++;
@@ -846,19 +891,16 @@
             }
         }
 
-        // клик для обмена с соседней пустой? Упростим: клик на элемент меняет его с пустым (там где ?)
         grid.addEventListener('click', function(e) {
             const el = e.target.closest('.puzzle-piece');
             if (!el) return;
             if (el.classList.contains('placed')) return;
             const idx = parseInt(el.dataset.index);
-            // ищем пустую (где значение === индексу)
             let emptyIdx = -1;
             for (let i = 0; i < total; i++) {
                 if (pieces[i] === i) { emptyIdx = i; break; }
             }
             if (emptyIdx === -1) return;
-            // меняем
             [pieces[idx], pieces[emptyIdx]] = [pieces[emptyIdx], pieces[idx]];
             render();
         });
@@ -868,7 +910,6 @@
 
     // ----- 4. Мемори 6 пар (фотки) -----
     function game_memory(container, onWin) {
-        // используем 6 разных фото (photo1..photo6)
         const images = [
             'images/photo11.jpg',
             'images/photo12.jpg',
@@ -883,7 +924,6 @@
         for (let i = 0; i < pairs; i++) {
             cards.push(i, i);
         }
-        // перемешиваем
         for (let i = cards.length - 1; i > 0; i--) {
             const j = Math.floor(Math.random() * (i + 1));
             [cards[i], cards[j]] = [cards[j], cards[i]];
@@ -921,7 +961,6 @@
         function checkMatch() {
             const [a, b] = flipped;
             if (cards[a] === cards[b]) {
-                // пара
                 cards[a] = -1;
                 cards[b] = -1;
                 matched++;
@@ -933,11 +972,10 @@
                     onWin();
                 }
             } else {
-                // не пара
                 setTimeout(() => {
                     flipped = [];
                     render();
-                }, 500);
+                }, 600);
             }
             lock = false;
         }
@@ -952,7 +990,6 @@
             if (flipped.length >= 2) return;
 
             flipped.push(idx);
-            // показываем картинку
             const val = cards[idx];
             if (val >= 0 && val < images.length) {
                 const img = document.createElement('img');
@@ -970,7 +1007,7 @@
 
             if (flipped.length === 2) {
                 lock = true;
-                setTimeout(checkMatch, 400);
+                setTimeout(checkMatch, 500);
             }
         });
 
@@ -994,15 +1031,13 @@
         let progress = 0;
         const totalSteps = 80;
 
-        // рисование пунктирного сердца
         function drawDashedHeart() {
             ctx.clearRect(0, 0, W, H);
             ctx.strokeStyle = '#d4a88a';
             ctx.lineWidth = 4;
             ctx.setLineDash([6, 8]);
             ctx.beginPath();
-            const cx = 200, cy = 200, size = 100;
-            // параметрическое сердце
+            const cx = 200, cy = 200;
             for (let t = 0; t <= Math.PI * 2; t += 0.02) {
                 const x = 16 * Math.pow(Math.sin(t), 3);
                 const y = 13 * Math.cos(t) - 5 * Math.cos(2*t) - 2 * Math.cos(3*t) - Math.cos(4*t);
@@ -1014,8 +1049,6 @@
             ctx.closePath();
             ctx.stroke();
             ctx.setLineDash([]);
-
-            // рисуем старт и финиш
             ctx.fillStyle = '#c97a5a';
             ctx.font = '18px sans-serif';
             ctx.fillText('❤️', 190, 70);
@@ -1027,12 +1060,9 @@
         let drawnPoints = [];
 
         function isOnHeart(x, y) {
-            // проверка расстояния до контура сердца (приблизительно)
             const cx = 200, cy = 200;
             const dx = (x - cx) / 4.5;
             const dy = (y - cy) / 4.5;
-            // параметрическое уравнение сердца: x = 16 sin³t, y = 13cos t - 5cos2t - 2cos3t - cos4t
-            // будем искать минимальное расстояние до кривой
             let minDist = Infinity;
             for (let t = 0; t <= Math.PI * 2; t += 0.02) {
                 const hx = 16 * Math.pow(Math.sin(t), 3);
@@ -1082,13 +1112,11 @@
                 drawnPoints.push({x: pos.x, y: pos.y});
                 lastX = pos.x;
                 lastY = pos.y;
-                // прогресс
                 progress = Math.min(1, drawnPoints.length / totalSteps);
                 if (progress >= 0.9) {
                     status.textContent = '🎉 Почти готово! Дорисуй чуть-чуть...';
                 }
             } else {
-                // если вышли за линию - сброс
                 ctx.strokeStyle = '#e8b4a8';
                 ctx.lineWidth = 3;
                 ctx.beginPath();
@@ -1097,7 +1125,6 @@
                 ctx.stroke();
                 ctx.strokeStyle = '#c97a5a';
                 ctx.lineWidth = 6;
-                // но не сбрасываем полностью, а просто рисуем красным
             }
         }
 
@@ -1110,7 +1137,6 @@
                     onWin();
                 } else {
                     status.textContent = '😅 Почти получилось! Попробуй ещё раз';
-                    // даём возможность попробовать снова
                     setTimeout(() => {
                         progress = 0;
                         drawnPoints = [];
@@ -1136,7 +1162,6 @@
     function game_phrase(container, onWin) {
         const correct = ['я', 'тебя', 'люблю'];
         const extra = ['кот', 'мир', 'солнце', 'ты', 'море', 'небо', 'счастье', 'звезда', 'вечность', 'сердце', 'жизнь', 'радость', 'дом', 'свет', 'огонь'];
-        // перемешиваем все
         let pool = [...correct, ...extra];
         for (let i = pool.length - 1; i > 0; i--) {
             const j = Math.floor(Math.random() * (i + 1));
@@ -1167,7 +1192,6 @@
                 span.dataset.word = word;
                 poolEl.appendChild(span);
             });
-            // обновляем результат
             resultEl.textContent = selected.join(' ');
         }
 
@@ -1179,9 +1203,7 @@
             selected.push(word);
             el.classList.add('used');
             resultEl.textContent = selected.join(' ');
-            // проверяем, не собрано ли уже
             if (selected.length === correct.length) {
-                // можно проверить автоматически
                 checkPhrase();
             }
         });
@@ -1197,7 +1219,6 @@
             } else {
                 msg.className = 'message error';
                 msg.textContent = '❌ Не та фраза, попробуй ещё раз!';
-                // сброс
                 selected = [];
                 pool.forEach(el => el.classList.remove('used'));
                 renderPool();
@@ -1270,10 +1291,6 @@
         const cols = 5, rows = 5;
         const cellSize = W / cols;
 
-        // простой лабиринт (стены между ячейками)
-        // 0 = проход, 1 = стена
-        // вертикальные стены: wallsV[r][c] (r=0..rows-1, c=0..cols-2)
-        // горизонтальные стены: wallsH[r][c] (r=0..rows-2, c=0..cols-1)
         let wallsV = [];
         let wallsH = [];
         for (let r = 0; r < rows; r++) {
@@ -1285,7 +1302,6 @@
             for (let c = 0; c < cols; c++) wallsH[r][c] = 1;
         }
 
-        // генерируем случайный лабиринт (алгоритм DFS)
         function generateMaze() {
             const visited = Array.from({length: rows}, () => Array(cols).fill(false));
             const stack = [];
@@ -1306,7 +1322,6 @@
                 } else {
                     const [nr, nc, dir] = neighbors[Math.floor(Math.random() * neighbors.length)];
                     visited[nr][nc] = true;
-                    // убираем стену
                     if (dir === 'up') { wallsH[nr][c] = 0; }
                     else if (dir === 'down') { wallsH[r][c] = 0; }
                     else if (dir === 'left') { wallsV[r][nc] = 0; }
@@ -1317,17 +1332,14 @@
         }
         generateMaze();
 
-        // рисуем лабиринт
         function drawMaze() {
             ctx.clearRect(0, 0, W, H);
             ctx.fillStyle = '#faf5f0';
             ctx.fillRect(0, 0, W, H);
 
-            // рисуем стены
             ctx.strokeStyle = '#4a3729';
             ctx.lineWidth = 3;
 
-            // вертикальные стены
             for (let r = 0; r < rows; r++) {
                 for (let c = 0; c < cols - 1; c++) {
                     if (wallsV[r][c] === 1) {
@@ -1338,7 +1350,6 @@
                     }
                 }
             }
-            // горизонтальные стены
             for (let r = 0; r < rows - 1; r++) {
                 for (let c = 0; c < cols; c++) {
                     if (wallsH[r][c] === 1) {
@@ -1350,10 +1361,8 @@
                 }
             }
 
-            // внешние стены
             ctx.strokeRect(0, 0, W, H);
 
-            // старт и финиш
             ctx.font = '28px sans-serif';
             ctx.fillStyle = '#c97a5a';
             ctx.fillText('❤️', 6, 36);
@@ -1363,31 +1372,20 @@
 
         drawMaze();
 
-        // логика прохождения
         let posX = 0.5, posY = 0.5;
         let isDragging = false;
-
-        function getCell(x, y) {
-            const c = Math.floor(x / cellSize);
-            const r = Math.floor(y / cellSize);
-            return {r, c};
-        }
 
         function canMoveTo(x, y) {
             const c = x / cellSize;
             const r = y / cellSize;
-            // проверка границ
             if (x < 0 || x > W || y < 0 || y > H) return false;
             const col = Math.floor(c);
             const row = Math.floor(r);
             if (col < 0 || col >= cols || row < 0 || row >= rows) return false;
-            // проверка стен
             const offsetX = c - col;
             const offsetY = r - row;
-            // вертикальная стена
             if (offsetX > 0.7 && col < cols - 1 && wallsV[row][col] === 1) return false;
             if (offsetX < 0.3 && col > 0 && wallsV[row][col-1] === 1) return false;
-            // горизонтальная стена
             if (offsetY > 0.7 && row < rows - 1 && wallsH[row][col] === 1) return false;
             if (offsetY < 0.3 && row > 0 && wallsH[row-1][col] === 1) return false;
             return true;
@@ -1409,7 +1407,6 @@
                 posX = Math.max(6, Math.min(W-6, x));
                 posY = Math.max(6, Math.min(H-6, y));
                 drawPlayer(posX, posY);
-                // проверка финиша
                 const endX = (cols-1) * cellSize + cellSize/2;
                 const endY = (rows-1) * cellSize + cellSize/2;
                 if (Math.abs(posX - endX) < 20 && Math.abs(posY - endY) < 20) {
@@ -1464,13 +1461,11 @@
         canvas.addEventListener('touchmove', handleMove);
         canvas.addEventListener('touchend', function(e) { isDragging = false; });
 
-        // начальная позиция
         drawPlayer(6, 6);
     }
 
     // ----- 9. Финальный вопрос -----
     function game_finalQuestion(container, onWin) {
-        // Здесь onWin вызовется после нажатия "Да" на финальный вопрос
         container.innerHTML = `
             <div style="font-size:20px;color:#4a3729;margin:16px 0;">
                 Остался последний вопрос, ты готова?
@@ -1499,8 +1494,6 @@
             finalContent.style.display = 'block';
         });
 
-        // кнопка "НЕТ" убегает
-        let noX = 0, noY = 0;
         noBtn.addEventListener('mouseover', function(e) {
             const rect = noBtn.getBoundingClientRect();
             const parentRect = noBtn.parentElement.getBoundingClientRect();
@@ -1515,11 +1508,9 @@
             finalMsg.textContent = '❤️ Я тебя тоже очень люблю! С днём рождения, моя родная! ❤️';
             yesBtn.style.transform = 'scale(1.2)';
             noBtn.style.display = 'none';
-            // победа!
             setTimeout(onWin, 500);
         });
 
-        // для мобильных: если нет hover, клик по "НЕТ" тоже двигает
         noBtn.addEventListener('click', function(e) {
             const rect = noBtn.getBoundingClientRect();
             const parentRect = noBtn.parentElement.getBoundingClientRect();
