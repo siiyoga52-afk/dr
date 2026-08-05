@@ -804,141 +804,125 @@
     }
 
     // ----- НОВАЯ ВЕРСИЯ ПАЗЛА -----
-    function game_puzzle(container, onWin) {
-        const imgSrc = 'images/photo17.jpg';
-        container.innerHTML = `
-            <div style="font-size:16px;color:#6b5a4a;margin-bottom:10px;">Кликни на фрагмент, чтобы поменять его с пустым местом</div>
-            <div class="puzzle-grid" id="puzzleGrid"></div>
-            <div id="puzzleStatus" style="font-size:16px;color:#8a7a6a;margin-top:8px;"></div>
-        `;
-        const grid = container.querySelector('#puzzleGrid');
-        const status = container.querySelector('#puzzleStatus');
-        const size = 3;
-        const total = size * size;
-        
-        // Изначальный порядок [0,1,2,3,4,5,6,7,8]
-        let pieces = [];
-        for (let i = 0; i < total; i++) pieces.push(i);
-        
-        // Перемешиваем с гарантией решения
-        function shuffle() {
-            // Делаем 200 случайных обменов
-            for (let step = 0; step < 200; step++) {
-                const i = Math.floor(Math.random() * total);
-                let j = Math.floor(Math.random() * total);
-                while (j === i) j = Math.floor(Math.random() * total);
-                [pieces[i], pieces[j]] = [pieces[j], pieces[i]];
-            }
-            // Проверяем, что пустое место существует (значение === индексу)
-            let hasEmpty = false;
-            for (let i = 0; i < total; i++) {
-                if (pieces[i] === i) { hasEmpty = true; break; }
-            }
-            if (!hasEmpty) {
-                // Если нет пустого - делаем последнюю клетку пустой
-                pieces[total - 1] = total - 1;
-            }
+function game_puzzle(container, onWin) {
+    const imgSrc = 'images/photo17.jpg';
+    container.innerHTML = `
+        <div style="font-size:16px;color:#6b5a4a;margin-bottom:10px;">Кликни на фрагмент, чтобы поменять его с пустым местом</div>
+        <div class="puzzle-grid" id="puzzleGrid"></div>
+        <div id="puzzleStatus" style="font-size:16px;color:#8a7a6a;margin-top:8px;"></div>
+    `;
+    const grid = container.querySelector('#puzzleGrid');
+    const status = container.querySelector('#puzzleStatus');
+    const size = 3;
+    const total = size * size;
+    
+    let pieces = [];
+    for (let i = 0; i < total; i++) pieces.push(i);
+    
+    function shuffle() {
+        for (let step = 0; step < 200; step++) {
+            const i = Math.floor(Math.random() * total);
+            let j = Math.floor(Math.random() * total);
+            while (j === i) j = Math.floor(Math.random() * total);
+            [pieces[i], pieces[j]] = [pieces[j], pieces[i]];
         }
-        shuffle();
-
-        function render() {
-            grid.innerHTML = '';
-            // Для каждой позиции i в сетке
-            for (let i = 0; i < total; i++) {
-                const value = pieces[i]; // какой фрагмент лежит в позиции i
-                const div = document.createElement('div');
-                div.className = 'puzzle-piece';
-                div.style.cursor = 'pointer';
-                div.style.width = '100%';
-                div.style.height = '100%';
-                div.style.position = 'relative';
-                div.style.border = '2px solid #d4c8b8';
-                div.style.borderRadius = '4px';
-                div.style.overflow = 'hidden';
-                
-                if (value === i) {
-                    // Пустое место (белый квадрат)
-                    div.style.background = '#e8ddd0';
-                    div.innerHTML = '⬜';
-                    div.style.display = 'flex';
-                    div.style.alignItems = 'center';
-                    div.style.justifyContent = 'center';
-                    div.style.fontSize = '36px';
-                    div.style.color = '#b8a898';
-                    div.dataset.empty = 'true';
-                } else {
-                    // Фрагмент картинки
-                    const col = value % size;
-                    const row = Math.floor(value / size);
-                    // Правильные проценты для нарезки: 0%, 33.33%, 66.66%
-                    const xPercent = col * 33.33;
-                    const yPercent = row * 33.33;
-                    div.style.backgroundImage = `url(${imgSrc})`;
-                    div.style.backgroundSize = '300% 300%';
-                    div.style.backgroundPosition = `${xPercent}% ${yPercent}%`;
-                    div.style.backgroundRepeat = 'no-repeat';
-                    div.dataset.empty = 'false';
-                    div.innerHTML = '';
-                }
-                div.dataset.index = i;
-                div.dataset.value = value;
-                grid.appendChild(div);
-            }
-            
-            // Проверка победы
-            let correct = 0;
-            for (let i = 0; i < total; i++) {
-                if (pieces[i] === i) correct++;
-            }
-            if (correct === total) {
-                status.textContent = '🎉 Пазл собран! Молодец! ❤️';
-                status.style.color = '#4a8a6a';
-                status.style.fontWeight = 'bold';
-                onWin();
-            } else {
-                status.textContent = `Собрано ${correct - 1} из ${total - 1}`;
-                status.style.color = '#8a7a6a';
-                status.style.fontWeight = 'normal';
-            }
+        let hasEmpty = false;
+        for (let i = 0; i < total; i++) {
+            if (pieces[i] === i) { hasEmpty = true; break; }
         }
-
-        // Обработчик клика
-        function handleClick(e) {
-            const el = e.target.closest('.puzzle-piece');
-            if (!el) return;
-            
-            // Нельзя кликать по пустому месту
-            if (el.dataset.empty === 'true') return;
-            
-            const clickedIndex = parseInt(el.dataset.index);
-            
-            // Находим пустое место
-            let emptyIndex = -1;
-            for (let i = 0; i < total; i++) {
-                if (pieces[i] === i) { emptyIndex = i; break; }
-            }
-            if (emptyIndex === -1) return;
-            
-            // Проверяем, соседние ли клетки
-            const clickedRow = Math.floor(clickedIndex / size);
-            const clickedCol = clickedIndex % size;
-            const emptyRow = Math.floor(emptyIndex / size);
-            const emptyCol = emptyIndex % size;
-            
-            const rowDiff = Math.abs(clickedRow - emptyRow);
-            const colDiff = Math.abs(clickedCol - emptyCol);
-            
-            // Можно менять только соседние (по горизонтали или вертикали)
-            if ((rowDiff === 1 && colDiff === 0) || (rowDiff === 0 && colDiff === 1)) {
-                // Меняем местами
-                [pieces[clickedIndex], pieces[emptyIndex]] = [pieces[emptyIndex], pieces[clickedIndex]];
-                render();
-            }
+        if (!hasEmpty) {
+            pieces[total - 1] = total - 1;
         }
-
-        grid.addEventListener('click', handleClick);
-        render();
     }
+    shuffle();
+
+    function render() {
+        grid.innerHTML = '';
+        for (let i = 0; i < total; i++) {
+            const value = pieces[i];
+            const div = document.createElement('div');
+            div.className = 'puzzle-piece';
+            div.style.cursor = 'pointer';
+            div.style.width = '100%';
+            div.style.height = '100%';
+            div.style.position = 'relative';
+            div.style.border = '2px solid #d4c8b8';
+            div.style.borderRadius = '4px';
+            div.style.overflow = 'hidden';
+            
+            if (value === i) {
+                div.style.background = '#e8ddd0';
+                div.innerHTML = '⬜';
+                div.style.display = 'flex';
+                div.style.alignItems = 'center';
+                div.style.justifyContent = 'center';
+                div.style.fontSize = '36px';
+                div.style.color = '#b8a898';
+                div.dataset.empty = 'true';
+            } else {
+                const col = value % size;
+                const row = Math.floor(value / size);
+                const xPercent = col * 33.33;
+                const yPercent = row * 33.33;
+                div.style.backgroundImage = `url(${imgSrc})`;
+                div.style.backgroundSize = '300% 300%';
+                div.style.backgroundPosition = `${xPercent}% ${yPercent}%`;
+                div.style.backgroundRepeat = 'no-repeat';
+                div.dataset.empty = 'false';
+                div.innerHTML = '';
+            }
+            div.dataset.index = i;
+            div.dataset.value = value;
+            grid.appendChild(div);
+        }
+        
+        let correct = 0;
+        for (let i = 0; i < total; i++) {
+            if (pieces[i] === i) correct++;
+        }
+        if (correct === total) {
+            status.textContent = '🎉 Пазл собран! Молодец! ❤️';
+            status.style.color = '#4a8a6a';
+            status.style.fontWeight = 'bold';
+            onWin();
+        } else {
+            const placed = correct - 1;
+            status.textContent = `Собрано ${placed} из ${total - 1}`;
+            status.style.color = '#8a7a6a';
+            status.style.fontWeight = 'normal';
+        }
+    }
+
+    function handleClick(e) {
+        const el = e.target.closest('.puzzle-piece');
+        if (!el) return;
+        if (el.dataset.empty === 'true') return;
+        
+        const clickedIndex = parseInt(el.dataset.index);
+        
+        let emptyIndex = -1;
+        for (let i = 0; i < total; i++) {
+            if (pieces[i] === i) { emptyIndex = i; break; }
+        }
+        if (emptyIndex === -1) return;
+        
+        const clickedRow = Math.floor(clickedIndex / size);
+        const clickedCol = clickedIndex % size;
+        const emptyRow = Math.floor(emptyIndex / size);
+        const emptyCol = emptyIndex % size;
+        
+        const rowDiff = Math.abs(clickedRow - emptyRow);
+        const colDiff = Math.abs(clickedCol - emptyCol);
+        
+        if ((rowDiff === 1 && colDiff === 0) || (rowDiff === 0 && colDiff === 1)) {
+            [pieces[clickedIndex], pieces[emptyIndex]] = [pieces[emptyIndex], pieces[clickedIndex]];
+            render();
+        }
+    }
+
+    grid.addEventListener('click', handleClick);
+    render();
+}
 
     function game_memory(container, onWin) {
         const images = [
