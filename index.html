@@ -208,20 +208,21 @@
         .puzzle-grid {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
-            gap: 4px;
+            gap: 2px;
             max-width: 360px;
             margin: 0 auto 14px;
             aspect-ratio: 1/1;
             width: 100%;
+            background: #d4c8b8;
         }
         .puzzle-piece {
             background: #e8ddd0;
-            border-radius: 4px;
+            border-radius: 0px;
             background-size: 300% 300%;
             background-repeat: no-repeat;
             cursor: pointer;
             transition: all 0.2s ease;
-            border: 2px solid #d4c8b8;
+            border: 1px solid #d4c8b8;
             position: relative;
             display: flex;
             align-items: center;
@@ -799,7 +800,9 @@
         });
     }
 
-    // ----- ИСПРАВЛЕННЫЙ ПАЗЛ -----
+    // ============================================================
+    //  ИСПРАВЛЕННЫЙ ПАЗЛ
+    // ============================================================
     function game_puzzle(container, onWin) {
         const imgSrc = 'images/photo17.jpg';
         container.innerHTML = `
@@ -849,29 +852,29 @@
                 div.style.width = '100%';
                 div.style.height = '100%';
                 div.style.position = 'relative';
-                div.style.border = '2px solid #d4c8b8';
-                div.style.borderRadius = '4px';
+                div.style.border = '1px solid #d4c8b8';
                 div.style.overflow = 'hidden';
                 div.style.transition = 'all 0.2s ease';
                 div.style.aspectRatio = '1/1';
+                div.style.backgroundSize = '300% 300%';
+                div.style.backgroundRepeat = 'no-repeat';
                 
-                // Правильная позиция: используем i (позиция в сетке) для обрезки
-                const col = i % size;
-                const row = Math.floor(i / size);
+                // Используем value (номер фрагмента) для правильной обрезки
+                const col = value % size;
+                const row = Math.floor(value / size);
                 const xPercent = col * 33.33;
                 const yPercent = row * 33.33;
                 div.style.backgroundImage = `url(${imgSrc})`;
-                div.style.backgroundSize = '300% 300%';
                 div.style.backgroundPosition = `${xPercent}% ${yPercent}%`;
-                div.style.backgroundRepeat = 'no-repeat';
                 
                 div.dataset.index = i;
                 div.dataset.value = value;
                 
                 if (selectedIndex === i) {
-                    div.style.border = '4px solid #c97a5a';
+                    div.style.border = '3px solid #c97a5a';
                     div.style.boxShadow = '0 0 20px rgba(201, 122, 90, 0.5)';
                     div.style.transform = 'scale(1.02)';
+                    div.style.zIndex = '2';
                 }
                 
                 grid.appendChild(div);
@@ -1235,7 +1238,6 @@
         renderPool();
     }
 
-    // ----- ИСПРАВЛЕННАЯ ИГРА "НАЙДИ ЦЕЛОЕ СЕРДЕЧКО" -----
     function game_findHeart(container, onWin) {
         const rows = 10, cols = 10;
         const total = rows * cols;
@@ -1279,7 +1281,9 @@
         });
     }
 
-    // ----- ИСПРАВЛЕННЫЙ ЛАБИРИНТ (готовый сложный) -----
+    // ============================================================
+    //  ИСПРАВЛЕННЫЙ ЛАБИРИНТ
+    // ============================================================
     function game_maze(container, onWin) {
         container.innerHTML = `
             <div style="font-size:16px;color:#6b5a4a;margin-bottom:6px;">Перетащи ❤️ к 🏆</div>
@@ -1296,62 +1300,51 @@
         const cols = 9, rows = 9;
         const cellSize = W / cols;
 
-        // Готовый сложный лабиринт 9x9 (0 = проход, 1 = стена)
-        // Стены между клетками: wallsV[r][c] - вертикальная стена справа от клетки (r,c)
-        // wallsH[r][c] - горизонтальная стена снизу от клетки (r,c)
-        // 1 = стена, 0 = проход
-        
-        // Сложный заранее заданный лабиринт
-        const mazeData = [
-            // Верхняя стена (r=0)
-            { h: [1,1,1,1,1,1,1,1,1], v: [1,1,1,1,1,0,1,1] },
-            // r=1
-            { h: [1,0,1,0,0,1,1,0,1], v: [1,0,1,1,1,0,1,0] },
-            // r=2
-            { h: [1,0,1,1,0,1,1,0,1], v: [1,0,0,1,1,1,0,1] },
-            // r=3
-            { h: [1,1,1,1,0,1,1,0,1], v: [0,1,1,0,1,1,1,0] },
-            // r=4
-            { h: [0,0,1,0,0,0,1,0,1], v: [0,1,0,1,1,0,1,0] },
-            // r=5
-            { h: [0,1,1,0,1,0,0,0,1], v: [0,0,1,0,1,0,1,0] },
-            // r=6
-            { h: [1,0,1,0,1,0,1,0,1], v: [1,0,0,0,0,0,1,0] },
-            // r=7
-            { h: [1,0,0,0,1,0,0,0,1], v: [1,1,0,0,0,0,0,0] },
-            // r=8 (нижняя стена)
-            { h: [1,1,1,1,1,1,1,1,1], v: [1,1,0,0,0,0,0,1] }
+        // Сложный лабиринт 9x9 с явными стенами
+        // 0 = проход, 1 = стена
+        // Стены между клетками (вертикальные и горизонтальные)
+        // Вертикальные стены: wallsV[r][c] - стена справа от клетки (r,c)
+        const wallsV = [
+            [1, 1, 1, 1, 1, 0, 1, 1],
+            [1, 0, 1, 1, 1, 1, 0, 1],
+            [0, 1, 0, 1, 0, 0, 1, 0],
+            [1, 1, 0, 1, 0, 1, 1, 0],
+            [0, 1, 0, 1, 1, 0, 1, 1],
+            [0, 0, 1, 0, 1, 1, 0, 0],
+            [1, 0, 0, 1, 0, 1, 0, 1],
+            [1, 1, 1, 0, 0, 0, 1, 0],
+            [1, 1, 1, 0, 1, 0, 1, 1]
         ];
 
-        // Строим стены из данных
-        let wallsV = [];
-        let wallsH = [];
-        for (let r = 0; r < rows; r++) {
-            wallsV[r] = [];
-            for (let c = 0; c < cols - 1; c++) {
-                wallsV[r][c] = mazeData[r].v[c] || 1;
-            }
-        }
-        for (let r = 0; r < rows - 1; r++) {
-            wallsH[r] = [];
-            for (let c = 0; c < cols; c++) {
-                wallsH[r][c] = mazeData[r].h[c] || 1;
-            }
-        }
+        // Горизонтальные стены: wallsH[r][c] - стена снизу от клетки (r,c)
+        const wallsH = [
+            [1, 1, 1, 1, 1, 1, 1, 1, 1],
+            [1, 0, 1, 0, 0, 1, 1, 0, 1],
+            [1, 0, 1, 1, 0, 1, 1, 0, 1],
+            [1, 1, 1, 1, 0, 1, 1, 0, 1],
+            [0, 0, 1, 0, 0, 0, 1, 0, 1],
+            [0, 1, 1, 0, 1, 0, 0, 0, 1],
+            [1, 0, 1, 0, 1, 0, 1, 0, 1],
+            [1, 0, 0, 0, 1, 0, 0, 0, 1],
+            [1, 1, 1, 1, 1, 1, 1, 1, 1]
+        ];
 
         let playerR = 0, playerC = 0;
         let isDragging = false;
-        let dragStartX = 0, dragStartY = 0;
         let dragStartR = 0, dragStartC = 0;
 
         function drawMaze() {
             ctx.clearRect(0, 0, W, H);
+            
+            // Фон
             ctx.fillStyle = '#faf5f0';
             ctx.fillRect(0, 0, W, H);
 
+            // Рисуем стены
             ctx.strokeStyle = '#4a3729';
-            ctx.lineWidth = 2.5;
+            ctx.lineWidth = 3;
 
+            // Вертикальные стены
             for (let r = 0; r < rows; r++) {
                 for (let c = 0; c < cols - 1; c++) {
                     if (wallsV[r][c] === 1) {
@@ -1362,6 +1355,8 @@
                     }
                 }
             }
+
+            // Горизонтальные стены
             for (let r = 0; r < rows - 1; r++) {
                 for (let c = 0; c < cols; c++) {
                     if (wallsH[r][c] === 1) {
@@ -1373,20 +1368,24 @@
                 }
             }
 
+            // Внешние стены
             ctx.strokeRect(0, 0, W, H);
 
             // Старт и финиш
             ctx.font = '26px sans-serif';
             ctx.fillStyle = '#c97a5a';
-            ctx.fillText('❤️', 6, 36);
+            ctx.fillText('❤️', 8, 38);
             ctx.fillStyle = '#d4a88a';
-            ctx.fillText('🏆', (cols-1)*cellSize + 6, (rows-1)*cellSize + 36);
+            const endX = (cols-1) * cellSize + 8;
+            const endY = (rows-1) * cellSize + 38;
+            ctx.fillText('🏆', endX, endY);
 
             // Игрок
             const px = playerC * cellSize + cellSize/2;
             const py = playerR * cellSize + cellSize/2;
-            ctx.shadowColor = 'rgba(201, 122, 90, 0.5)';
-            ctx.shadowBlur = 15;
+            
+            ctx.shadowColor = 'rgba(201, 122, 90, 0.4)';
+            ctx.shadowBlur = 20;
             ctx.beginPath();
             ctx.arc(px, py, 16, 0, Math.PI * 2);
             ctx.fillStyle = '#c97a5a';
@@ -1426,7 +1425,6 @@
             return false;
         }
 
-        // Обработчики для перетаскивания
         function getCellFromPos(e) {
             const rect = canvas.getBoundingClientRect();
             const scaleX = canvas.width / rect.width;
@@ -1435,7 +1433,9 @@
             const clientY = e.touches ? e.touches[0].clientY : e.clientY;
             const x = (clientX - rect.left) * scaleX;
             const y = (clientY - rect.top) * scaleY;
-            return { c: Math.floor(x / cellSize), r: Math.floor(y / cellSize) };
+            const c = Math.floor(x / cellSize);
+            const r = Math.floor(y / cellSize);
+            return { r, c };
         }
 
         function onStart(e) {
@@ -1456,7 +1456,6 @@
             const dr = pos.r - dragStartR;
             const dc = pos.c - dragStartC;
             
-            // Движение только на соседнюю клетку
             if (Math.abs(dr) + Math.abs(dc) === 1) {
                 if (tryMoveTo(pos.r, pos.c)) {
                     dragStartR = playerR;
